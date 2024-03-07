@@ -4,11 +4,13 @@ import {
   connectionEstablished,
   initSocket,
   connectionLost,
-  getUsers,
-  setUsers,
 } from "./slices/socketSlice";
 import SocketFactory, { SocketInterface } from "./SocketFactory";
-import { Action } from "@reduxjs/toolkit";
+import {
+  getUsers,
+  setUsers,
+  stopListeningUser,
+} from "./slices/conversationSlice";
 
 enum SocketEvent {
   Connect = "connect",
@@ -21,6 +23,7 @@ enum SocketEvent {
   Price = "price",
   Message = "message",
   Users = "users",
+  getUsers = "getUsers",
 }
 
 const socketMiddleware: Middleware = (store) => {
@@ -31,22 +34,17 @@ const socketMiddleware: Middleware = (store) => {
         const token: string = store.getState().auth.token;
         socket = SocketFactory.create(token);
         socket.socket.connect();
+
         socket.socket.on(SocketEvent.Connect, () => {
           console.log("connected");
           store.dispatch(connectionEstablished());
         });
-
         socket.socket.on(SocketEvent.Error, (message) => {
           console.error(message);
         });
         socket.socket.on(SocketEvent.Message, (message) => {
           console.log(message);
         });
-        socket.socket.on(SocketEvent.Users, (message) => {
-          console.log(message);
-          store.dispatch(setUsers(message));
-        });
-
         socket.socket.on(SocketEvent.Disconnect, (reason) => {
           console.log("disconnected");
           store.dispatch(connectionLost());
@@ -55,8 +53,18 @@ const socketMiddleware: Middleware = (store) => {
     }
 
     if (getUsers.match(action) && socket) {
-      socket.socket.emit(SocketEvent.Message);
+      socket.socket.off(SocketEvent.Users);
+      socket.socket.on(SocketEvent.Users, (message) => {
+        console.log(message);
+        store.dispatch(setUsers(message));
+      });
+      socket.socket.emit(SocketEvent.getUsers);
     }
+
+    if (stopListeningUser.match(action) && socket) {
+      socket.socket.off(SocketEvent.Users);
+    }
+
     next(action);
   };
 };

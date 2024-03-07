@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import "./Login.css";
 import axios, { AxiosResponse } from "axios";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
@@ -7,13 +7,13 @@ import { login } from "../redux/slices/authSlice";
 import { Box, TextField } from "@mui/material";
 
 const Login: React.FC = () => {
-  const { username, token } = useAppSelector((state) => state.auth);
   const [credentials, setCredentials] = useState({
     username: "",
     password: "",
   });
   const [message, setMessage] = useState("");
   const dispatch = useAppDispatch();
+  const token = localStorage.getItem("token");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials((prev) => {
@@ -44,6 +44,7 @@ const Login: React.FC = () => {
       password: "",
     });
   };
+
   return (
     <Box className="login-container">
       <form onSubmit={handleSubmit} className="login-form">

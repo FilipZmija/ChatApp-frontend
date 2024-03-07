@@ -1,22 +1,25 @@
 import React, { useEffect } from "react";
-import { io } from "socket.io-client";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import {
-  connectionEstablished,
-  getUsers,
-  initSocket,
-} from "../redux/slices/socketSlice";
-
+import { initSocket } from "../redux/slices/socketSlice";
+import UserSearchBar from "./Users/SeachBar";
+import UsersList from "./Users/UsersList";
+import { Box } from "@mui/material";
 export default function MainView() {
-  const users = useAppSelector((state) => state.socket.users);
+  const users = useAppSelector((state) => state.conv.users);
+
   const dispatch = useAppDispatch();
+
   useEffect(() => {
     dispatch(initSocket());
   }, []);
+
   return (
     <>
-      <button onClick={() => dispatch(getUsers())}>users</button>
-      <button onClick={() => console.log(users)}>Print</button>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <UserSearchBar />
+      </Box>
+      <Box></Box>
+      {/* {users && <UsersList users={users} />} */}
     </>
   );
 }
