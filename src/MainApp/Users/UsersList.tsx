@@ -10,10 +10,10 @@ import {
 } from "@mui/material";
 import { TUser } from "../../types/user";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { selectUser } from "../../redux/slices/conversationSlice";
+import { selectUser } from "../../redux/slices/instancesSlice";
 
 const UsersList = ({ users }: { users: TUser[] }) => {
-  const selectedUser = useAppSelector((state) => state.conv.selection);
+  const selectedUser = useAppSelector((state) => state.instance.selection);
   const dispatch = useAppDispatch();
 
   return (
@@ -25,17 +25,17 @@ const UsersList = ({ users }: { users: TUser[] }) => {
         {users.map((user) => (
           <ListItemButton
             key={user.id}
-            onClick={() => dispatch(selectUser(user.id))}
-            selected={selectedUser === user.id}
+            onClick={() => dispatch(selectUser({ id: user.id, type: "user" }))}
+            selected={selectedUser.id === user.id}
             divider
           >
             <ListItemAvatar>
               <Avatar sx={{ bgcolor: user ? "green" : "red" }}>
-                {user.username.charAt(0)}
+                {user.name.charAt(0)}
               </Avatar>
             </ListItemAvatar>
             <ListItemText
-              primary={user.username}
+              primary={user.name}
               sx={{ color: user ? "green" : "red" }}
             />
           </ListItemButton>

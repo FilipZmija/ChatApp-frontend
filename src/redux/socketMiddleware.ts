@@ -6,11 +6,8 @@ import {
   connectionLost,
 } from "./slices/socketSlice";
 import SocketFactory, { SocketInterface } from "./SocketFactory";
-import {
-  getUsers,
-  setUsers,
-  stopListeningUser,
-} from "./slices/conversationSlice";
+import { emitMessage, reciveMessage } from "./slices/conversationSlice";
+import { getUsers, setUsers, stopListeningUser } from "./slices/instancesSlice";
 
 enum SocketEvent {
   Connect = "connect",
@@ -24,6 +21,7 @@ enum SocketEvent {
   Message = "message",
   Users = "users",
   getUsers = "getUsers",
+  sendMessage = "sendMessage",
 }
 
 const socketMiddleware: Middleware = (store) => {
@@ -43,7 +41,7 @@ const socketMiddleware: Middleware = (store) => {
           console.error(message);
         });
         socket.socket.on(SocketEvent.Message, (message) => {
-          console.log(message);
+          store.dispatch(reciveMessage(message));
         });
         socket.socket.on(SocketEvent.Disconnect, (reason) => {
           console.log("disconnected");
@@ -58,11 +56,18 @@ const socketMiddleware: Middleware = (store) => {
         console.log(message);
         store.dispatch(setUsers(message));
       });
+      console.log("here");
       socket.socket.emit(SocketEvent.getUsers);
     }
 
     if (stopListeningUser.match(action) && socket) {
+      console.log(SocketEvent.getUsers);
+
       socket.socket.off(SocketEvent.Users);
+    }
+
+    if (emitMessage.match(action) && socket) {
+      socket.socket.emit(SocketEvent.sendMessage, action.payload);
     }
 
     next(action);

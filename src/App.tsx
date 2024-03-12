@@ -16,7 +16,7 @@ export default function App() {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response: AxiosResponse<IAuthData> = await axios.get(
+          const response: AxiosResponse<{ user: IAuthData }> = await axios.get(
             `${process.env.REACT_APP_API_URL}/user/data`,
             {
               headers: {
@@ -24,8 +24,9 @@ export default function App() {
               },
             }
           );
-          const { username } = response.data;
-          dispatch(login({ token, username }));
+          const { name, id } = response.data.user;
+
+          dispatch(login({ token, name, id }));
         } catch (e: any) {
           console.error(e);
           localStorage.removeItem("token");

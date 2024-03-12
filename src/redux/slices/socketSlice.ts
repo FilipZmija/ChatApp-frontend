@@ -1,17 +1,11 @@
-// Slice of store that manages Socket connections
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { TUser } from "../../types/user";
+import { createSlice } from "@reduxjs/toolkit";
 
 export interface SocketState {
   isConnected: boolean;
-  rooms: string[];
-  users: TUser[];
 }
 
 const initialState: SocketState = {
   isConnected: false,
-  rooms: [],
-  users: [],
 };
 
 const socketSlice = createSlice({

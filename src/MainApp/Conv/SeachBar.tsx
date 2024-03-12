@@ -6,40 +6,36 @@ import {
   Typography,
   Avatar,
 } from "@mui/material";
-import {
-  getUsers,
-  stopListeningUser,
-} from "../../redux/slices/conversationSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { TUser } from "../../types/user";
+import { getUsers, selectUser } from "../../redux/slices/instancesSlice";
 
 const UserSearchBar: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const users = useAppSelector((state) => state.conv.users);
-
+  const { users, selection } = useAppSelector((state) => state.instance);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(getUsers());
-    return () => {
-      dispatch(stopListeningUser());
-    };
   }, []);
-
   return (
     <div>
       <Autocomplete
         id="combo-box-demo"
         options={users}
         sx={{ width: 300 }}
-        getOptionLabel={(option) => option.username}
+        onChange={(event: any, newValue: TUser | null) => {
+          newValue && dispatch(selectUser({ id: newValue.id, type: "user" }));
+        }}
+        getOptionLabel={(option) => option.name}
         renderOption={(props, option) => (
           <Box component="li" sx={{ mr: 2, flexShrink: 0 }} {...props}>
             <Box>
               <Avatar sx={{ bgcolor: option ? "green" : "red" }}>
-                {option.username.charAt(0)}
+                {option.name.charAt(0)}
               </Avatar>
             </Box>
-            <Typography>{option.username}</Typography>
+            <Typography>{option.name}</Typography>
           </Box>
         )}
         renderInput={(params) => <TextField {...params} label="Movie" />}
