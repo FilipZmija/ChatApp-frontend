@@ -7,6 +7,7 @@ import axios, { AxiosResponse } from "axios";
 import { IConversationData } from "../types/messages";
 import Conversation from "./Conv/Conversation";
 import { updateInfo } from "../redux/slices/conversationSlice";
+import UsersList from "./Users/ConversationList";
 
 export default function MainView() {
   const { selection } = useAppSelector((state) => state.instance);
@@ -30,6 +31,7 @@ export default function MainView() {
               },
             }
           );
+          response.data.recipient.type = selection.type;
           dispatch(updateInfo(response.data));
 
           setConversationData(response.data);
@@ -43,7 +45,7 @@ export default function MainView() {
         <UserSearchBar />
       </Box>
       <Box></Box>
-      {/* {users && <UsersList users={users} />} */}
+      <UsersList />
       {conversationData && <Conversation conversationData={conversationData} />}
     </>
   );

@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
   emitMessage,
   reciveMessage,
+  startListeningConversation,
 } from "../../redux/slices/conversationSlice";
 import { EmitMessage } from "../../classes/conversation";
 
@@ -18,6 +19,12 @@ const Conversation = ({
   const dispatch = useAppDispatch();
   const [messages, setMessages] = useState(conversation?.messages || []);
   const [textMessage, setTextMessage] = useState<string>("");
+  useEffect(() => {
+    dispatch(startListeningConversation(recipient));
+
+    return () => {};
+  }, []);
+
   useEffect(() => {
     console.log(conversationSuperData);
   }, [conversationSuperData]);
@@ -52,13 +59,15 @@ const Conversation = ({
       <div>
         <h2>{recipient.type === "user" ? recipient.name : recipient.name}</h2>
       </div>
-      {messages.length > 0 ? (
+      {conversationSuperData ? (
         <div>
-          {messages.map((message, index) => (
-            <div key={index}>
-              <p>{message.content}</p>
-            </div>
-          ))}
+          {conversationSuperData.conversation?.messages?.map(
+            (message, index) => (
+              <div key={index}>
+                <p>{message.content}</p>
+              </div>
+            )
+          )}
         </div>
       ) : (
         <div>

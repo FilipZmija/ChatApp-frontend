@@ -1,12 +1,18 @@
 // Slice of store that manages Socket connections
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { TUser } from "../../types/user";
-import { IMessage, IMessageToSocket } from "../../types/messages";
+import {
+  IConversationData,
+  IMessage,
+  IMessageToSocket,
+  ISingleMessage,
+  TConversation,
+} from "../../types/messages";
 
 export interface SocketState {
   rooms: string[];
   users: TUser[];
-  conversations: string[];
+  conversations: TConversation[];
   selection: { id: number; type: "user" | "room" };
 }
 
@@ -36,9 +42,32 @@ const conversationSlice = createSlice({
     ) => {
       state.selection = action.payload;
     },
+    setConversations: (state, action: PayloadAction<TConversation[]>) => {
+      state.conversations = action.payload;
+    },
+    addConvesation: (state, action) => {
+      state.conversations.push(action.payload);
+    },
+    reciveGlobalMessage: (
+      state,
+      action: PayloadAction<{ message: ISingleMessage; to: TConversation }>
+    ) => {
+      const { childId } = action.payload.to;
+      const index = state.conversations.findIndex(
+        (conv) => conv.childId === childId
+      );
+      state.conversations[index].lastMessage = action.payload.message;
+    },
   },
 });
 
-export const { getUsers, setUsers, stopListeningUser, selectUser } =
-  conversationSlice.actions;
+export const {
+  getUsers,
+  setUsers,
+  stopListeningUser,
+  selectUser,
+  setConversations,
+  addConvesation,
+  reciveGlobalMessage,
+} = conversationSlice.actions;
 export default conversationSlice.reducer;

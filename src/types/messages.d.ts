@@ -11,6 +11,7 @@ export interface TConversation {
   id: number | null;
   childId: number;
   name?: string;
+  lastMessage?: ISingleMessage;
   messages?: ISingleMessage[];
   type: "user" | "room";
 }

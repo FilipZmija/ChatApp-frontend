@@ -6,8 +6,17 @@ import {
   connectionLost,
 } from "./slices/socketSlice";
 import SocketFactory, { SocketInterface } from "./SocketFactory";
-import { emitMessage, reciveMessage } from "./slices/conversationSlice";
-import { getUsers, setUsers, stopListeningUser } from "./slices/instancesSlice";
+import {
+  emitMessage,
+  reciveMessage,
+  startListeningConversation,
+} from "./slices/conversationSlice";
+import {
+  getUsers,
+  reciveGlobalMessage,
+  setUsers,
+  stopListeningUser,
+} from "./slices/instancesSlice";
 
 enum SocketEvent {
   Connect = "connect",
@@ -41,7 +50,7 @@ const socketMiddleware: Middleware = (store) => {
           console.error(message);
         });
         socket.socket.on(SocketEvent.Message, (message) => {
-          store.dispatch(reciveMessage(message));
+          store.dispatch(reciveGlobalMessage(message));
         });
         socket.socket.on(SocketEvent.Disconnect, (reason) => {
           console.log("disconnected");
@@ -58,6 +67,14 @@ const socketMiddleware: Middleware = (store) => {
       });
       console.log("here");
       socket.socket.emit(SocketEvent.getUsers);
+    }
+
+    if (startListeningConversation.match(action) && socket) {
+      const { id, type } = action.payload;
+      socket.socket.off(type + "" + id);
+      socket.socket.on(type + "" + id, (message) => {
+        store.dispatch(reciveMessage(message.message));
+      });
     }
 
     if (stopListeningUser.match(action) && socket) {
