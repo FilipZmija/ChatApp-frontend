@@ -15,7 +15,7 @@
   border-radius: 5px;
 }
 
-button {
+.register-form button {
   width: 100%;
   padding: 10px;
   font-size: 16px;
@@ -27,6 +27,6 @@ button {
   margin: 2px;
 }
 
-button:hover {
+.register-form button:hover {
   background-color: #218838;
 }
