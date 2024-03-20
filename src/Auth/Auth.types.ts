@@ -1,4 +1,5 @@
 export interface IAuthData {
   accessToken: string;
-  username: string;
+  name: string;
+  id: number;
 }

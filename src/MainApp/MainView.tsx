@@ -1,22 +1,54 @@
-import React, { useEffect } from "react";
-import { io } from "socket.io-client";
+import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import {
-  connectionEstablished,
-  getUsers,
-  initSocket,
-} from "../redux/slices/socketSlice";
+import { initSocket } from "../redux/slices/socketSlice";
+import UserSearchBar from "./Conv/SeachBar";
+import { Box, Button } from "@mui/material";
+import axios, { AxiosResponse } from "axios";
+import { IConversationData } from "../types/messages";
+import Conversation from "./Conv/Conversation";
+import { updateInfo } from "../redux/slices/conversationSlice";
+import UsersList from "./Users/ConversationList";
+import RoomCreationForm from "./Room/RoomCreationForm";
 
 export default function MainView() {
-  const users = useAppSelector((state) => state.socket.users);
+  const { selection } = useAppSelector((state) => state.instance);
+  const token = useAppSelector((state) => state.auth.token);
+  const [conversationData, setConversationData] = useState<IConversationData>();
   const dispatch = useAppDispatch();
+
   useEffect(() => {
     dispatch(initSocket());
   }, []);
+
+  useEffect(() => {
+    {
+      selection.id !== -1 &&
+        (async () => {
+          const response: AxiosResponse<IConversationData> = await axios.get(
+            `${process.env.REACT_APP_API_URL}/conversation/${selection.type}/${selection.id}`,
+            {
+              headers: {
+                Authorization: "Bearer " + token,
+              },
+            }
+          );
+          console.log(response.data);
+          response.data.recipient.type = selection.type;
+          dispatch(updateInfo(response.data));
+
+          setConversationData(response.data);
+        })();
+    }
+  }, [selection]);
+
   return (
     <>
-      <button onClick={() => dispatch(getUsers())}>users</button>
-      <button onClick={() => console.log(users)}>Print</button>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <UserSearchBar />
+      </Box>
+      <RoomCreationForm />
+      <UsersList />
+      {conversationData && <Conversation conversationData={conversationData} />}
     </>
   );
 }
