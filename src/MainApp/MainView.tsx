@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { initSocket } from "../redux/slices/socketSlice";
 import UserSearchBar from "./Conv/SeachBar";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import axios, { AxiosResponse } from "axios";
 import { IConversationData } from "../types/messages";
 import Conversation from "./Conv/Conversation";
 import { updateInfo } from "../redux/slices/conversationSlice";
 import UsersList from "./Users/ConversationList";
+import RoomCreationForm from "./Room/RoomCreationForm";
 
 export default function MainView() {
   const { selection } = useAppSelector((state) => state.instance);
@@ -31,6 +32,7 @@ export default function MainView() {
               },
             }
           );
+          console.log(response.data);
           response.data.recipient.type = selection.type;
           dispatch(updateInfo(response.data));
 
@@ -44,7 +46,7 @@ export default function MainView() {
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <UserSearchBar />
       </Box>
-      <Box></Box>
+      <RoomCreationForm />
       <UsersList />
       {conversationData && <Conversation conversationData={conversationData} />}
     </>

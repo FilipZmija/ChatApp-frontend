@@ -1,11 +1,12 @@
 // Slice of store that manages Socket connections
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { TRoom, TUser } from "../../types/user";
+import { TUser } from "../../types/user";
 import {
   IConversationData,
   IMessageToSocket,
   ISingleMessage,
 } from "../../types/messages";
+import { TRoom } from "../../types/room";
 
 const initialState: IConversationData = {
   conversation: {
@@ -36,6 +37,7 @@ const conversationSlice = createSlice({
         state.conversation.messages.push(action.payload);
       }
     },
+
     startListeningConversation: (
       state,
       action: PayloadAction<TUser | TRoom>

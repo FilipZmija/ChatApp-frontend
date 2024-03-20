@@ -21,9 +21,7 @@ const Conversation = ({
   const [textMessage, setTextMessage] = useState<string>("");
   useEffect(() => {
     dispatch(startListeningConversation(recipient));
-
-    return () => {};
-  }, []);
+  }, [recipient]);
 
   useEffect(() => {
     console.log(conversationSuperData);

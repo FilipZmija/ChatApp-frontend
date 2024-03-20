@@ -12,7 +12,9 @@ import {
   startListeningConversation,
 } from "./slices/conversationSlice";
 import {
+  createRoom,
   getUsers,
+  joinRoom,
   reciveGlobalMessage,
   setUsers,
   stopListeningUser,
@@ -22,7 +24,7 @@ enum SocketEvent {
   Connect = "connect",
   Disconnect = "disconnect",
   // Emit events
-  JoinRoom = "join-room",
+  JoinRoom = "joinRoom",
   LeaveRoom = "leave-room",
   // On events
   Error = "err",
@@ -31,6 +33,7 @@ enum SocketEvent {
   Users = "users",
   getUsers = "getUsers",
   sendMessage = "sendMessage",
+  CreateRoom = "createRoom",
 }
 
 const socketMiddleware: Middleware = (store) => {
@@ -52,6 +55,9 @@ const socketMiddleware: Middleware = (store) => {
         socket.socket.on(SocketEvent.Message, (message) => {
           store.dispatch(reciveGlobalMessage(message));
         });
+        socket.socket.on(SocketEvent.JoinRoom, (conversation) => {
+          store.dispatch(joinRoom(conversation));
+        });
         socket.socket.on(SocketEvent.Disconnect, (reason) => {
           console.log("disconnected");
           store.dispatch(connectionLost());
@@ -72,7 +78,9 @@ const socketMiddleware: Middleware = (store) => {
     if (startListeningConversation.match(action) && socket) {
       const { id, type } = action.payload;
       socket.socket.off(type + "" + id);
+      console.log(type + "" + id);
       socket.socket.on(type + "" + id, (message) => {
+        console.log(message);
         store.dispatch(reciveMessage(message.message));
       });
     }
@@ -85,6 +93,10 @@ const socketMiddleware: Middleware = (store) => {
 
     if (emitMessage.match(action) && socket) {
       socket.socket.emit(SocketEvent.sendMessage, action.payload);
+    }
+
+    if (createRoom.match(action) && socket) {
+      socket.socket.emit(SocketEvent.CreateRoom, action.payload);
     }
 
     next(action);

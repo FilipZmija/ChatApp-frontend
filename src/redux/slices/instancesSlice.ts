@@ -1,13 +1,8 @@
 // Slice of store that manages Socket connections
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { TUser } from "../../types/user";
-import {
-  IConversationData,
-  IMessage,
-  IMessageToSocket,
-  ISingleMessage,
-  TConversation,
-} from "../../types/messages";
+import { ISingleMessage, TConversation } from "../../types/messages";
+import { TRoomCreationData } from "../../types/room";
 
 export interface SocketState {
   rooms: string[];
@@ -42,6 +37,9 @@ const conversationSlice = createSlice({
     ) => {
       state.selection = action.payload;
     },
+    createRoom: (state, action: PayloadAction<TRoomCreationData>) => {
+      return;
+    },
     setConversations: (state, action: PayloadAction<TConversation[]>) => {
       state.conversations = action.payload;
     },
@@ -52,11 +50,14 @@ const conversationSlice = createSlice({
       state,
       action: PayloadAction<{ message: ISingleMessage; to: TConversation }>
     ) => {
-      const { childId } = action.payload.to;
-      const index = state.conversations.findIndex(
-        (conv) => conv.childId === childId
-      );
+      const { id } = action.payload.to;
+      console.log(action.payload.to);
+      const index = state.conversations.findIndex((conv) => conv.id === id);
       state.conversations[index].lastMessage = action.payload.message;
+    },
+    joinRoom: (state, action: PayloadAction<TConversation>) => {
+      console.log(action.payload);
+      state.conversations.unshift(action.payload);
     },
   },
 });
@@ -69,5 +70,7 @@ export const {
   setConversations,
   addConvesation,
   reciveGlobalMessage,
+  createRoom,
+  joinRoom,
 } = conversationSlice.actions;
 export default conversationSlice.reducer;
