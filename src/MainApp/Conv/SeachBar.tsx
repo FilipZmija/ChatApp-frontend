@@ -19,7 +19,7 @@ const UserSearchBar: React.FC = () => {
     dispatch(getUsers());
   }, []);
   return (
-    <div>
+    <Box sx={{ display: "flex", justifyContent: "center" }}>
       <Autocomplete
         id="combo-box-demo"
         options={users}
@@ -40,7 +40,7 @@ const UserSearchBar: React.FC = () => {
         )}
         renderInput={(params) => <TextField {...params} label="Movie" />}
       />
-    </div>
+    </Box>
   );
 };
 

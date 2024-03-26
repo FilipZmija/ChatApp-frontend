@@ -1,15 +1,19 @@
 import { TUser, TRoom } from "./user";
 
 export interface ISingleMessage {
+  createdAt: Date;
   content: string;
   id: number | null;
   userId: number;
+  user: TUser;
+
   type: "message" | "system";
+  status?: "sent" | "delivered" | "seen";
 }
 
-export interface TConversation {
+export interface IConversation {
   id: number | null;
-  childId: number;
+  childId: number | null;
   name?: string;
   lastMessage?: ISingleMessage;
   messages?: ISingleMessage[];
@@ -18,19 +22,15 @@ export interface TConversation {
 
 export interface IConversationData {
   recipient: TUser | TRoom;
-  conversation: TConversation | null;
-}
-
-export interface IConversationRoom extends TConversation {
-  users?: TUser[];
+  conversation: IConversation;
 }
 
 export interface IMessage {
-  to: IConversationRecipeint | IConversationRoom | null;
+  to: IConversation | null;
   message: ISingleMessage;
 }
 
 export class IMessageToSocket extends IMessage {
-  to: IConversationRecipeint | IConversationRoom;
+  to: IConversation;
   message: ISingleMessage;
 }

@@ -2,6 +2,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { TUser } from "../../types/user";
 import {
+  IConversation,
   IConversationData,
   IMessageToSocket,
   ISingleMessage,
@@ -23,25 +24,40 @@ const conversationSlice = createSlice({
   initialState,
   reducers: {
     updateInfo: (state, action: PayloadAction<IConversationData>) => {
-      state.conversation = action.payload.conversation;
+      if (action.payload.conversation)
+        state.conversation = action.payload.conversation;
       state.recipient = action.payload.recipient;
     },
     emitMessage: (state, action: PayloadAction<IMessageToSocket>) => {
       if (state.conversation?.messages) {
         state.conversation.messages.push(action.payload.message);
       }
-      return;
     },
     reciveMessage: (state, action: PayloadAction<ISingleMessage>) => {
       if (state.conversation?.messages) {
         state.conversation.messages.push(action.payload);
       }
     },
-
+    confirmMessage: (
+      state,
+      action: PayloadAction<{
+        conversation: IConversation;
+        message: ISingleMessage;
+      }>
+    ) => {
+      if (!state.conversation.id) {
+        state.conversation.id = action.payload.conversation.id;
+        state.conversation.childId = action.payload.conversation.childId;
+        state.conversation.type = action.payload.conversation.type;
+      }
+    },
     startListeningConversation: (
       state,
       action: PayloadAction<TUser | TRoom>
     ) => {
+      return;
+    },
+    startListeningCofirmationMessage: (state, action) => {
       return;
     },
   },
@@ -52,5 +68,7 @@ export const {
   reciveMessage,
   updateInfo,
   startListeningConversation,
+  startListeningCofirmationMessage,
+  confirmMessage,
 } = conversationSlice.actions;
 export default conversationSlice.reducer;

@@ -1,13 +1,14 @@
 // Slice of store that manages Socket connections
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { TUser } from "../../types/user";
-import { ISingleMessage, TConversation } from "../../types/messages";
+import { ISingleMessage, IConversation } from "../../types/messages";
 import { TRoomCreationData } from "../../types/room";
+import { createNoSubstitutionTemplateLiteral } from "typescript";
 
 export interface SocketState {
   rooms: string[];
   users: TUser[];
-  conversations: TConversation[];
+  conversations: IConversation[];
   selection: { id: number; type: "user" | "room" };
 }
 
@@ -40,23 +41,47 @@ const conversationSlice = createSlice({
     createRoom: (state, action: PayloadAction<TRoomCreationData>) => {
       return;
     },
-    setConversations: (state, action: PayloadAction<TConversation[]>) => {
+    setConversations: (state, action: PayloadAction<IConversation[]>) => {
       state.conversations = action.payload;
     },
     addConvesation: (state, action) => {
-      state.conversations.push(action.payload);
+      state.conversations.unshift(action.payload);
+    },
+    updateConversation: (state, action) => {
+      console.log(action.payload);
+      const index = state.conversations.findIndex(
+        (conv) => conv.id === action.payload.id
+      );
+      if (index === -1) {
+        state.conversations.push(action.payload);
+      }
+      selectUser(action.payload);
     },
     reciveGlobalMessage: (
       state,
-      action: PayloadAction<{ message: ISingleMessage; to: TConversation }>
+      action: PayloadAction<{
+        message: ISingleMessage;
+        to: IConversation;
+        from: TUser;
+      }>
     ) => {
-      const { id } = action.payload.to;
-      console.log(action.payload.to);
+      const { id, type } = action.payload.to;
+      const { id: childId, name } = action.payload.from;
       const index = state.conversations.findIndex((conv) => conv.id === id);
-      state.conversations[index].lastMessage = action.payload.message;
+      if (index !== -1) {
+        state.conversations[index].lastMessage = action.payload.message;
+      } else {
+        const newConversation: IConversation = {
+          id,
+          childId,
+          type,
+          name,
+        };
+        state.conversations.unshift(newConversation);
+        state.conversations[0].lastMessage = action.payload.message;
+      }
     },
-    joinRoom: (state, action: PayloadAction<TConversation>) => {
-      console.log(action.payload);
+    joinRoom: (state, action: PayloadAction<IConversation>) => {
       state.conversations.unshift(action.payload);
     },
   },
@@ -72,5 +97,6 @@ export const {
   reciveGlobalMessage,
   createRoom,
   joinRoom,
+  updateConversation,
 } = conversationSlice.actions;
 export default conversationSlice.reducer;

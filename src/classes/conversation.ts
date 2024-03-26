@@ -1,39 +1,48 @@
 import {
-  IConversationRoom,
   IMessageToSocket,
   ISingleMessage,
-  TConversation,
+  IConversation,
 } from "../types/messages";
+import { TRoom } from "../types/room";
+import { TUser } from "../types/user";
 
-export class EmitMessage implements IMessageToSocket {
-  to: TConversation;
+export class MessageEmitter implements IMessageToSocket {
+  to: IConversation;
   message: ISingleMessage;
 
   constructor(
-    conversation: TConversation | null,
+    conversation: IConversation | null,
     messageContent: string,
     userId: number,
-    recipientId: number
+    recipient: TUser | TRoom,
+    sender: TUser
   ) {
     this.message = {
       type: "message",
       content: messageContent,
       id: null,
       userId,
+      createdAt: new Date(),
+      user: sender,
     };
     if (!conversation) {
-      this.to = { id: null, childId: recipientId, type: "user" };
+      this.to = {
+        id: null,
+        childId: recipient.id,
+        type: "user",
+        name: recipient.name,
+      };
     } else {
       this.to =
         conversation.type === "user"
           ? {
               id: conversation.id,
-              childId: recipientId,
+              childId: recipient.id,
               type: "user",
             }
           : {
               id: conversation.id,
-              childId: recipientId,
+              childId: recipient.id,
               name: conversation.name,
               type: "room",
             };

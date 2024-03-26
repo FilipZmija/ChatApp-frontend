@@ -7,8 +7,10 @@ import {
 } from "./slices/socketSlice";
 import SocketFactory, { SocketInterface } from "./SocketFactory";
 import {
+  confirmMessage,
   emitMessage,
   reciveMessage,
+  startListeningCofirmationMessage,
   startListeningConversation,
 } from "./slices/conversationSlice";
 import {
@@ -18,7 +20,9 @@ import {
   reciveGlobalMessage,
   setUsers,
   stopListeningUser,
+  updateConversation,
 } from "./slices/instancesSlice";
+import { IConversation } from "../types/messages";
 
 enum SocketEvent {
   Connect = "connect",
@@ -55,9 +59,13 @@ const socketMiddleware: Middleware = (store) => {
         socket.socket.on(SocketEvent.Message, (message) => {
           store.dispatch(reciveGlobalMessage(message));
         });
-        socket.socket.on(SocketEvent.JoinRoom, (conversation) => {
-          store.dispatch(joinRoom(conversation));
-        });
+        socket.socket.on(
+          SocketEvent.JoinRoom,
+          (conversation: IConversation) => {
+            store.dispatch(joinRoom(conversation));
+            socket.socket.emit("joinRoom", conversation.childId);
+          }
+        );
         socket.socket.on(SocketEvent.Disconnect, (reason) => {
           console.log("disconnected");
           store.dispatch(connectionLost());
@@ -71,7 +79,6 @@ const socketMiddleware: Middleware = (store) => {
         console.log(message);
         store.dispatch(setUsers(message));
       });
-      console.log("here");
       socket.socket.emit(SocketEvent.getUsers);
     }
 
@@ -82,6 +89,15 @@ const socketMiddleware: Middleware = (store) => {
       socket.socket.on(type + "" + id, (message) => {
         console.log(message);
         store.dispatch(reciveMessage(message.message));
+      });
+    }
+    if (startListeningCofirmationMessage.match(action) && socket) {
+      const { id, type } = action.payload;
+      const eventName = "confirmation" + type + "" + id;
+      socket.socket.off(eventName);
+      socket.socket.on(eventName, (message) => {
+        store.dispatch(confirmMessage(message));
+        store.dispatch(updateConversation(message.conversation));
       });
     }
 

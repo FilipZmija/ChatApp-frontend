@@ -20,7 +20,7 @@ const UsersList = () => {
   }, []);
   console.log(conversations);
   return (
-    <Box sx={{ width: "30%", borderRight: 1, borderColor: "divider" }}>
+    <>
       <Typography variant="h6" sx={{ p: 2 }}>
         Users Online
       </Typography>
@@ -30,7 +30,7 @@ const UsersList = () => {
             <ConversationItem conversation={conversation} />
           ))}
       </List>
-    </Box>
+    </>
   );
 };
 export default UsersList;

@@ -2,20 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { initSocket } from "../redux/slices/socketSlice";
 import UserSearchBar from "./Conv/SeachBar";
-import { Box, Button } from "@mui/material";
+import Conversation from "./Conv/Conversation";
+import UsersList from "./Users/ConversationList";
 import axios, { AxiosResponse } from "axios";
 import { IConversationData } from "../types/messages";
-import Conversation from "./Conv/Conversation";
 import { updateInfo } from "../redux/slices/conversationSlice";
-import UsersList from "./Users/ConversationList";
-import RoomCreationForm from "./Room/RoomCreationForm";
 
 export default function MainView() {
+  const dispatch = useAppDispatch();
   const { selection } = useAppSelector((state) => state.instance);
   const token = useAppSelector((state) => state.auth.token);
-  const [conversationData, setConversationData] = useState<IConversationData>();
-  const dispatch = useAppDispatch();
-
   useEffect(() => {
     dispatch(initSocket());
   }, []);
@@ -35,20 +31,52 @@ export default function MainView() {
           console.log(response.data);
           response.data.recipient.type = selection.type;
           dispatch(updateInfo(response.data));
-
-          setConversationData(response.data);
         })();
     }
   }, [selection]);
 
   return (
     <>
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <UserSearchBar />
-      </Box>
-      <RoomCreationForm />
-      <UsersList />
-      {conversationData && <Conversation conversationData={conversationData} />}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 25vw)",
+          gridTemplateRows: "repeat(10, 10vh)",
+        }}
+      >
+        <div
+          style={{
+            height: "10vh",
+            display: "grid",
+            gridColumn: "2/4",
+            gridRow: "1",
+          }}
+        >
+          <UserSearchBar />
+          {/* <RoomCreationForm /> */}
+        </div>
+        <div
+          style={{
+            height: "100vh",
+            display: "grid",
+            gridColumn: "1",
+            gridRow: "1",
+            overflow: "auto",
+          }}
+        >
+          <UsersList />
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridColumn: "2/5",
+            gridRow: "2/11",
+            overflow: "auto",
+          }}
+        >
+          <Conversation />
+        </div>
+      </div>
     </>
   );
 }
