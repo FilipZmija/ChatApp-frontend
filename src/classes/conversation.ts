@@ -22,7 +22,7 @@ export class MessageEmitter implements IMessageToSocket {
       content: messageContent,
       id: null,
       userId,
-      createdAt: new Date(),
+      createdAt: new Date().getTime(),
       user: sender,
     };
     if (!conversation) {

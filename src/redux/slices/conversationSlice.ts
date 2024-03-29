@@ -60,6 +60,15 @@ const conversationSlice = createSlice({
     startListeningCofirmationMessage: (state, action) => {
       return;
     },
+    clearConversation: (state) => {
+      state.conversation = {
+        id: null,
+        childId: -1,
+        messages: [],
+        type: "user",
+      };
+      state.recipient = { name: "", id: -1, type: "user" };
+    },
   },
 });
 
@@ -70,5 +79,6 @@ export const {
   startListeningConversation,
   startListeningCofirmationMessage,
   confirmMessage,
+  clearConversation,
 } = conversationSlice.actions;
 export default conversationSlice.reducer;

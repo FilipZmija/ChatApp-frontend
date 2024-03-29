@@ -1,7 +1,7 @@
 import { TUser, TRoom } from "./user";
 
 export interface ISingleMessage {
-  createdAt: Date;
+  createdAt: number;
   content: string;
   id: number | null;
   userId: number;

@@ -28,9 +28,13 @@ const Conversation = () => {
   return (
     <>
       <div style={{ overflow: "hidden" }}>
-        <h2>{recipient.type === "user" ? recipient.name : recipient.name}</h2>
+        {recipient.name ? <h2>{recipient.name}</h2> : <h2>No user</h2>}
       </div>
-      <MessagesList messages={conversationSuperData.conversation.messages} />
+      <MessagesList
+        messages={conversationSuperData.conversation.messages}
+        key={"Converastion" + conversation.id}
+      />
+
       <MessageSender conversation={conversation} recipient={recipient} />
     </>
   );

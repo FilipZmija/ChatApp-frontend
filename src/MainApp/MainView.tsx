@@ -6,7 +6,10 @@ import Conversation from "./Conv/Conversation";
 import UsersList from "./Users/ConversationList";
 import axios, { AxiosResponse } from "axios";
 import { IConversationData } from "../types/messages";
-import { updateInfo } from "../redux/slices/conversationSlice";
+import {
+  clearConversation,
+  updateInfo,
+} from "../redux/slices/conversationSlice";
 
 export default function MainView() {
   const dispatch = useAppDispatch();
@@ -20,6 +23,7 @@ export default function MainView() {
     {
       selection.id !== -1 &&
         (async () => {
+          dispatch(clearConversation());
           const response: AxiosResponse<IConversationData> = await axios.get(
             `${process.env.REACT_APP_API_URL}/conversation/${selection.type}/${selection.id}`,
             {
@@ -28,7 +32,6 @@ export default function MainView() {
               },
             }
           );
-          console.log(response.data);
           response.data.recipient.type = selection.type;
           dispatch(updateInfo(response.data));
         })();

@@ -18,9 +18,8 @@ const UsersList = () => {
       dispatch(setConversations(response.data));
     })();
   }, []);
-  console.log(conversations);
   return (
-    <>
+    <div style={{ gridRow: 1 }}>
       <Typography variant="h6" sx={{ p: 2 }}>
         Users Online
       </Typography>
@@ -30,7 +29,7 @@ const UsersList = () => {
             <ConversationItem conversation={conversation} />
           ))}
       </List>
-    </>
+    </div>
   );
 };
 export default UsersList;

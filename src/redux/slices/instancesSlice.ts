@@ -3,7 +3,6 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { TUser } from "../../types/user";
 import { ISingleMessage, IConversation } from "../../types/messages";
 import { TRoomCreationData } from "../../types/room";
-import { createNoSubstitutionTemplateLiteral } from "typescript";
 
 export interface SocketState {
   rooms: string[];
@@ -70,6 +69,10 @@ const conversationSlice = createSlice({
       const index = state.conversations.findIndex((conv) => conv.id === id);
       if (index !== -1) {
         state.conversations[index].lastMessage = action.payload.message;
+        if (index !== 0) {
+          state.conversations.slice(index, 1);
+          state.conversations.unshift(state.conversations[index]);
+        }
       } else {
         const newConversation: IConversation = {
           id,

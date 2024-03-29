@@ -19,20 +19,6 @@ export default function MessageSender({
 
   const sendMessage = () => {
     if (myId) {
-      // setMessages((prev) => {
-      //   const array = [...prev];
-      //   const newMessage: ISingleMessage = {
-      //     id: null,
-      //     content: textMessage,
-      //     userId: myId,
-      //     type: "message",
-      //     createdAt: new Date(),
-      //     user: { id: myId, name, type: "user" },
-      //   };
-      //   array.push(newMessage);
-      //   return array;
-      // });
-
       const messageToEmit = new MessageEmitter(
         conversation,
         textMessage,
