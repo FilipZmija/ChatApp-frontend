@@ -9,7 +9,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { TUser } from "../../types/user";
 import { getUsers, selectUser } from "../../redux/slices/instancesSlice";
-
+import UserItem from "./UserItem";
 const UserSearchBar: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const { users, selection } = useAppSelector((state) => state.instance);
@@ -30,12 +30,7 @@ const UserSearchBar: React.FC = () => {
         getOptionLabel={(option) => option.name}
         renderOption={(props, option) => (
           <Box component="li" sx={{ mr: 2, flexShrink: 0 }} {...props}>
-            <Box>
-              <Avatar sx={{ bgcolor: option ? "green" : "red" }}>
-                {option.name.charAt(0)}
-              </Avatar>
-            </Box>
-            <Typography>{option.name}</Typography>
+            <UserItem user={option} />
           </Box>
         )}
         renderInput={(params) => <TextField {...params} label="Movie" />}

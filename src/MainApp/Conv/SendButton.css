@@ -1,0 +1,22 @@
+.send-button {
+  border-radius: 50%;
+  border: 0;
+  background-color: #fff;
+  height: 40px;
+  width: 40px;
+  margin: 0.1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.send-icon {
+  height: 37px;
+  width: 37px;
+}
+
+.send-button:hover {
+  background-color: rgb(173, 173, 173, 0.2);
+}
+.send-button:active {
+  background-color: rgb(173, 173, 173, 0.55);
+}

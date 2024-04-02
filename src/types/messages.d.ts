@@ -12,7 +12,7 @@ export interface ISingleMessage {
 }
 
 export interface IConversation {
-  id: number | null;
+  id: number;
   childId: number | null;
   name?: string;
   lastMessage?: ISingleMessage;

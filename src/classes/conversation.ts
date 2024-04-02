@@ -27,7 +27,7 @@ export class MessageEmitter implements IMessageToSocket {
     };
     if (!conversation) {
       this.to = {
-        id: null,
+        id: 0,
         childId: recipient.id,
         type: "user",
         name: recipient.name,

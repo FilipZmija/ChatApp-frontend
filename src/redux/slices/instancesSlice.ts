@@ -1,18 +1,24 @@
 // Slice of store that manages Socket connections
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { TUser } from "../../types/user";
-import { ISingleMessage, IConversation } from "../../types/messages";
+import {
+  ISingleMessage,
+  IConversation,
+  IConversationData,
+} from "../../types/messages";
 import { TRoomCreationData } from "../../types/room";
 
 export interface SocketState {
   rooms: string[];
   users: TUser[];
+  activeUsers: TUser[];
   conversations: IConversation[];
   selection: { id: number; type: "user" | "room" };
 }
 
 const initialState: SocketState = {
   users: [],
+  activeUsers: [],
   rooms: [],
   conversations: [],
   selection: { id: -1, type: "user" },
@@ -31,6 +37,9 @@ const conversationSlice = createSlice({
     setUsers: (state, action: PayloadAction<TUser[]>) => {
       state.users = action.payload;
     },
+    setActiveUsers: (state, action: PayloadAction<TUser[]>) => {
+      state.activeUsers = action.payload;
+    },
     selectUser: (
       state,
       action: PayloadAction<{ id: number; type: "user" | "room" }>
@@ -46,15 +55,26 @@ const conversationSlice = createSlice({
     addConvesation: (state, action) => {
       state.conversations.unshift(action.payload);
     },
-    updateConversation: (state, action) => {
+    updateConversation: (
+      state,
+      action: PayloadAction<{
+        message: { message: ISingleMessage };
+        conversation: IConversation;
+      }>
+    ) => {
       console.log(action.payload);
       const index = state.conversations.findIndex(
-        (conv) => conv.id === action.payload.id
+        (conv) => conv.id === action.payload.conversation.id
       );
       if (index === -1) {
-        state.conversations.push(action.payload);
+        console.log(index);
+
+        state.conversations.push(action.payload.conversation);
+      } else {
+        state.conversations[index].lastMessage = action.payload.message.message;
+        state.conversations.unshift(...state.conversations.splice(index, 1));
       }
-      selectUser(action.payload);
+      selectUser(action.payload.conversation);
     },
     reciveGlobalMessage: (
       state,
@@ -70,8 +90,7 @@ const conversationSlice = createSlice({
       if (index !== -1) {
         state.conversations[index].lastMessage = action.payload.message;
         if (index !== 0) {
-          state.conversations.slice(index, 1);
-          state.conversations.unshift(state.conversations[index]);
+          state.conversations.unshift(...state.conversations.splice(index, 1));
         }
       } else {
         const newConversation: IConversation = {
@@ -93,6 +112,7 @@ const conversationSlice = createSlice({
 export const {
   getUsers,
   setUsers,
+  setActiveUsers,
   stopListeningUser,
   selectUser,
   setConversations,

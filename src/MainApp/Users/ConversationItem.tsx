@@ -18,7 +18,7 @@ export default function ConversationItem({
   const selectedUser = useAppSelector((state) => state.instance.selection);
   const { id: currentUserId } = useAppSelector((state) => state.auth);
   return (
-    <>
+    <div style={{ overflow: "hidden" }}>
       <ListItemButton
         key={conversation.id}
         onClick={() =>
@@ -93,6 +93,6 @@ export default function ConversationItem({
           sx={{ color: conversation ? "green" : "red" }}
         />
       </ListItemButton>
-    </>
+    </div>
   );
 }

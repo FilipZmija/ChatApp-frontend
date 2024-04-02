@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setConversations } from "../../redux/slices/instancesSlice";
 import axios from "axios";
 import ConversationItem from "./ConversationItem";
-const UsersList = () => {
+const ConversationList = () => {
   const { token } = useAppSelector((state) => state.auth);
   const { conversations } = useAppSelector((state) => state.instance);
   const dispatch = useAppDispatch();
@@ -19,7 +19,11 @@ const UsersList = () => {
     })();
   }, []);
   return (
-    <div style={{ gridRow: 1 }}>
+    <div
+      style={{
+        minWidth: "15vw",
+      }}
+    >
       <Typography variant="h6" sx={{ p: 2 }}>
         Users Online
       </Typography>
@@ -32,4 +36,4 @@ const UsersList = () => {
     </div>
   );
 };
-export default UsersList;
+export default ConversationList;

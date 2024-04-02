@@ -11,7 +11,7 @@ import { TRoom } from "../../types/room";
 
 const initialState: IConversationData = {
   conversation: {
-    id: null,
+    id: 0,
     childId: -1,
     messages: [],
     type: "user",
@@ -60,9 +60,12 @@ const conversationSlice = createSlice({
     startListeningCofirmationMessage: (state, action) => {
       return;
     },
+    stopListeningConversation: (state, action) => {
+      return;
+    },
     clearConversation: (state) => {
       state.conversation = {
-        id: null,
+        id: 0,
         childId: -1,
         messages: [],
         type: "user",
@@ -80,5 +83,6 @@ export const {
   startListeningCofirmationMessage,
   confirmMessage,
   clearConversation,
+  stopListeningConversation,
 } = conversationSlice.actions;
 export default conversationSlice.reducer;
