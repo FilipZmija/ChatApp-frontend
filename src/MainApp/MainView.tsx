@@ -7,7 +7,9 @@ import UsersList from "./Users/ConversationList";
 import axios, { AxiosResponse } from "axios";
 import { IConversationData } from "../types/messages";
 import {
+  changeSelectedUser,
   clearConversation,
+  setLoading,
   updateInfo,
 } from "../redux/slices/conversationSlice";
 import ConversationList from "./Users/ConversationList";
@@ -25,7 +27,7 @@ export default function MainView() {
     {
       selection.id !== -1 &&
         (async () => {
-          dispatch(clearConversation());
+          dispatch(setLoading(true));
           const response: AxiosResponse<IConversationData> = await axios.get(
             `${process.env.REACT_APP_API_URL}/conversation/${selection.type}/${selection.id}`,
             {

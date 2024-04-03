@@ -1,8 +1,8 @@
 import React from "react";
-import { ISingleMessage } from "../../types/messages";
+import { IMessageCreator, ISingleMessage } from "../../types/messages";
 import { useSelector } from "react-redux";
 import { useAppSelector } from "../../redux/hooks";
-import { Avatar } from "@mui/material";
+import { Avatar, Skeleton } from "@mui/material";
 
 const firstLastStyles = {
   first: {
@@ -28,16 +28,15 @@ export default function Message({
   type,
   messageSender,
   nextMessageSender,
-}: {
-  message: ISingleMessage;
-  type: "first" | "middle" | "last" | "single";
-  messageSender: "me" | "guest";
-  nextMessageSender: "me" | "guest";
-}) {
+}: IMessageCreator) {
   const isMyMessage = messageSender === "me";
   const isMyNextMessage = nextMessageSender === "me";
+  const isFirstGuestMessage =
+    (type === "first" || type === "single") && messageSender !== "me";
+  const isLastGuestMessage =
+    (type === "last" || type === "single") && messageSender !== "me";
   const messageStyle = {
-    maxWidth: "60%", // Limit message width to 70% of container
+    maxWidth: "80%", // Limit message width to 70% of container
     margin: "0.2rem 0.5rem",
     padding: "0.33rem 1rem",
     fontSize: "16px",
@@ -73,25 +72,51 @@ export default function Message({
           sx={{
             height: "1.5rem",
             width: "1.5rem",
-            opacity: isMyNextMessage ? 1 : 0,
+            opacity: isLastGuestMessage ? 1 : 0,
+            fontSize: "1rem",
           }}
-        />
+        >
+          {messageSender.charAt(0)}
+        </Avatar>
       )}
-      {type === "first" && (
-        <p style={{ fontSize: "0.5rem", padding: 0, margin: 0 }}>Nick</p>
-      )}
-      <p
-        style={
-          isMyMessage
-            ? { ...myMessageStyle, ...firstLastStyles[type][messageSender] }
-            : {
-                ...guestMessageStyle,
-                ...firstLastStyles[type][messageSender],
-              }
-        }
-      >
-        {message.content}
-      </p>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {isFirstGuestMessage && (
+          <p
+            style={{
+              fontSize: "0.7rem",
+              fontWeight: 300,
+              padding: 0,
+              marginLeft: "0.5rem",
+              margin: 0,
+            }}
+          >
+            {messageSender}
+          </p>
+        )}
+        <p
+          style={
+            isMyMessage
+              ? {
+                  ...myMessageStyle,
+                  ...firstLastStyles[type][
+                    messageSender === "me" ? "me" : "guest"
+                  ],
+                }
+              : {
+                  ...guestMessageStyle,
+                  ...firstLastStyles[type][
+                    messageSender === "me" ? "me" : "guest"
+                  ],
+                }
+          }
+        >
+          {message.content ? (
+            message.content
+          ) : (
+            <Skeleton variant="text" width={150} />
+          )}
+        </p>
+      </div>
     </div>
   );
 }

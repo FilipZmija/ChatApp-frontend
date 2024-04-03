@@ -6,6 +6,7 @@ import { useAppDispatch } from "../../redux/hooks";
 
 export default function UserItem({ user }: { user: TUser }) {
   const dispatch = useAppDispatch();
+  console.log(user);
   return (
     <>
       <ListItemButton
@@ -13,7 +14,7 @@ export default function UserItem({ user }: { user: TUser }) {
           flexDirection: "row",
           alignItem: "center",
         }}
-        onClick={() => dispatch(selectUser({ id: user.id, type: "user" }))}
+        onClick={() => dispatch(selectUser(user))}
       >
         <Avatar
           sx={{
@@ -23,7 +24,7 @@ export default function UserItem({ user }: { user: TUser }) {
             marginBottom: "0.6rem",
           }}
         >
-          {user.name.charAt(0)}
+          {user.name?.charAt(0)}
         </Avatar>
         <div
           style={{

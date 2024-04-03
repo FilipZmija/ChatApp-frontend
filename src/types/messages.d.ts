@@ -13,7 +13,7 @@ export interface ISingleMessage {
 
 export interface IConversation {
   id: number;
-  childId: number | null;
+  childId: number;
   name?: string;
   lastMessage?: ISingleMessage;
   messages?: ISingleMessage[];
@@ -23,6 +23,7 @@ export interface IConversation {
 export interface IConversationData {
   recipient: TUser | TRoom;
   conversation: IConversation;
+  loading?: boolean;
 }
 
 export interface IMessage {
@@ -33,4 +34,11 @@ export interface IMessage {
 export class IMessageToSocket extends IMessage {
   to: IConversation;
   message: ISingleMessage;
+}
+
+export interface IMessageCreator {
+  message: ISingleMessage | { id: number; content: string };
+  type: "first" | "middle" | "last" | "single";
+  messageSender: string;
+  nextMessageSender: string;
 }

@@ -44,9 +44,13 @@ const Conversation = () => {
       <MessagesList
         messages={conversationSuperData.conversation.messages}
         key={"Converastion" + conversation.id}
+        id={recipient.id}
+        recipient={recipient}
       />
 
-      <MessageSender conversation={conversation} recipient={recipient} />
+      {recipient.id !== 0 && (
+        <MessageSender conversation={conversation} recipient={recipient} />
+      )}
     </div>
   );
 };

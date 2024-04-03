@@ -27,6 +27,7 @@ export default function ConversationItem({
             selectUser({
               id: conversation.childId,
               type: conversation.type,
+              name: conversation.name,
             })
           )
         }

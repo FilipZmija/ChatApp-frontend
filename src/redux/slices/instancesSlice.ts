@@ -13,7 +13,7 @@ export interface SocketState {
   users: TUser[];
   activeUsers: TUser[];
   conversations: IConversation[];
-  selection: { id: number; type: "user" | "room" };
+  selection: { id: number; name?: string; type: "user" | "room" };
 }
 
 const initialState: SocketState = {
@@ -42,9 +42,15 @@ const conversationSlice = createSlice({
     },
     selectUser: (
       state,
-      action: PayloadAction<{ id: number; type: "user" | "room" }>
+      action: PayloadAction<{
+        id: number;
+        type: "user" | "room";
+        name?: string;
+      }>
     ) => {
-      state.selection = action.payload;
+      state.selection.id = action.payload.id;
+      state.selection.type = action.payload.type;
+      state.selection.name = action.payload.name;
     },
     createRoom: (state, action: PayloadAction<TRoomCreationData>) => {
       return;
