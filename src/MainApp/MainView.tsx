@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { initSocket } from "../redux/slices/socketSlice";
-import UserSearchBar from "./Conv/SeachBar";
-import { Box, Button } from "@mui/material";
+import UserSearchBar from "./Users/SeachBar";
+import Conversation from "./Conv/Conversation";
+import UsersList from "./Users/ConversationList";
 import axios, { AxiosResponse } from "axios";
 import { IConversationData } from "../types/messages";
-import Conversation from "./Conv/Conversation";
-import { updateInfo } from "../redux/slices/conversationSlice";
-import UsersList from "./Users/ConversationList";
-import RoomCreationForm from "./Room/RoomCreationForm";
+import {
+  changeSelectedUser,
+  clearConversation,
+  setLoading,
+  updateInfo,
+} from "../redux/slices/conversationSlice";
+import ConversationList from "./Users/ConversationList";
+import UserList from "./Users/UserList";
 
 export default function MainView() {
+  const dispatch = useAppDispatch();
   const { selection } = useAppSelector((state) => state.instance);
   const token = useAppSelector((state) => state.auth.token);
-  const [conversationData, setConversationData] = useState<IConversationData>();
-  const dispatch = useAppDispatch();
-
   useEffect(() => {
     dispatch(initSocket());
   }, []);
@@ -24,6 +27,7 @@ export default function MainView() {
     {
       selection.id !== -1 &&
         (async () => {
+          dispatch(setLoading(true));
           const response: AxiosResponse<IConversationData> = await axios.get(
             `${process.env.REACT_APP_API_URL}/conversation/${selection.type}/${selection.id}`,
             {
@@ -32,23 +36,54 @@ export default function MainView() {
               },
             }
           );
-          console.log(response.data);
           response.data.recipient.type = selection.type;
           dispatch(updateInfo(response.data));
-
-          setConversationData(response.data);
         })();
     }
   }, [selection]);
 
   return (
     <>
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <UserSearchBar />
-      </Box>
-      <RoomCreationForm />
-      <UsersList />
-      {conversationData && <Conversation conversationData={conversationData} />}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(16, 6.25vw)",
+          gridTemplateRows: "repeat(10, 10vh)",
+        }}
+      >
+        <div
+          style={{
+            height: "100vh",
+            display: "grid",
+            gridColumn: "1/4",
+            gridRow: "1",
+          }}
+        >
+          <ConversationList />
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridColumn: "4/14",
+            gridRow: "1/11",
+            overflow: "auto",
+          }}
+        >
+          <Conversation />
+        </div>
+        <div
+          style={{
+            height: "10vh",
+            display: "grid",
+            gridColumn: "14/17",
+            gridRow: "1",
+          }}
+        >
+          {/* <UserSearchBar /> */}
+          {/* <RoomCreationForm /> */}
+          <UserList />
+        </div>
+      </div>
     </>
   );
 }

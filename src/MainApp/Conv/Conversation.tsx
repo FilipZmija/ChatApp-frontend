@@ -1,85 +1,56 @@
-import React, { useEffect, useState } from "react";
-import { IConversationData, ISingleMessage } from "../../types/messages";
+import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
-  emitMessage,
-  reciveMessage,
+  startListeningCofirmationMessage,
   startListeningConversation,
+  stopListeningConversation,
 } from "../../redux/slices/conversationSlice";
-import { EmitMessage } from "../../classes/conversation";
+import { TUser } from "../../types/user";
+import { TRoom } from "../../types/room";
+import MessagesList from "./MessagesList";
+import MessageSender from "./MessageSender";
+import { IConversation } from "../../types/messages";
+import Badge from "./Badge";
 
-const Conversation = ({
-  conversationData,
-}: {
-  conversationData: IConversationData;
-}) => {
-  const { recipient, conversation } = conversationData;
-  const userId = useAppSelector((state) => state.auth.id);
-  const conversationSuperData = useAppSelector((state) => state.conv);
+const Conversation = () => {
   const dispatch = useAppDispatch();
-  const [messages, setMessages] = useState(conversation?.messages || []);
-  const [textMessage, setTextMessage] = useState<string>("");
+
+  const conversationSuperData = useAppSelector((state) => state.conv);
+  const {
+    recipient,
+    conversation,
+  }: { recipient: TUser | TRoom; conversation: IConversation } =
+    conversationSuperData;
+
   useEffect(() => {
     dispatch(startListeningConversation(recipient));
+    dispatch(startListeningCofirmationMessage(recipient));
+    return () => {
+      dispatch(stopListeningConversation(recipient));
+    };
   }, [recipient]);
 
-  useEffect(() => {
-    console.log(conversationSuperData);
-  }, [conversationSuperData]);
-  const sendMessage = () => {
-    if (userId) {
-      setMessages((prev) => {
-        const array = [...prev];
-        const newMessage: ISingleMessage = {
-          id: null,
-          content: textMessage,
-          userId,
-          type: "message",
-        };
-        array.push(newMessage);
-        return array;
-      });
-
-      const messageToEmit = new EmitMessage(
-        conversation,
-        textMessage,
-        userId,
-        recipient.id
-      );
-
-      console.log(messageToEmit.body);
-      dispatch(emitMessage(messageToEmit.body));
-    }
-  };
-
   return (
-    <div>
-      <div>
-        <h2>{recipient.type === "user" ? recipient.name : recipient.name}</h2>
-      </div>
-      {conversationSuperData ? (
-        <div>
-          {conversationSuperData.conversation?.messages?.map(
-            (message, index) => (
-              <div key={index}>
-                <p>{message.content}</p>
-              </div>
-            )
-          )}
-        </div>
-      ) : (
-        <div>
-          <p>No messages yet.</p>
-        </div>
-      )}
+    <div
+      style={{
+        border: "1px solid rgb(0,0,0,0.15)",
+        borderTop: "none",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
+      <Badge recipient={recipient} />
+      <MessagesList
+        messages={conversationSuperData.conversation.messages}
+        key={"Converastion" + conversation.id}
+        id={recipient.id}
+        recipient={recipient}
+      />
 
-      <div>
-        <textarea
-          placeholder="Type your message here..."
-          onChange={(e) => setTextMessage(e.target.value)}
-        />
-        <button onClick={() => sendMessage()}>Send</button>
-      </div>
+      {recipient.id !== 0 && (
+        <MessageSender conversation={conversation} recipient={recipient} />
+      )}
     </div>
   );
 };

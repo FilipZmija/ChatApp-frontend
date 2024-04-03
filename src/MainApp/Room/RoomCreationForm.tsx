@@ -27,7 +27,7 @@ export default function FormDialog() {
   });
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [users, setUsers] = useState<TUser[]>([]);
-
+  console.log(users);
   useEffect(() => {
     (async () => {
       const response = await axios.get(
