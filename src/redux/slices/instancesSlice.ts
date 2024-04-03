@@ -1,18 +1,24 @@
 // Slice of store that manages Socket connections
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { TUser } from "../../types/user";
-import { ISingleMessage, TConversation } from "../../types/messages";
+import {
+  ISingleMessage,
+  IConversation,
+  IConversationData,
+} from "../../types/messages";
 import { TRoomCreationData } from "../../types/room";
 
 export interface SocketState {
   rooms: string[];
   users: TUser[];
-  conversations: TConversation[];
-  selection: { id: number; type: "user" | "room" };
+  activeUsers: TUser[];
+  conversations: IConversation[];
+  selection: { id: number; name?: string; type: "user" | "room" };
 }
 
 const initialState: SocketState = {
   users: [],
+  activeUsers: [],
   rooms: [],
   conversations: [],
   selection: { id: -1, type: "user" },
@@ -31,32 +37,79 @@ const conversationSlice = createSlice({
     setUsers: (state, action: PayloadAction<TUser[]>) => {
       state.users = action.payload;
     },
+    setActiveUsers: (state, action: PayloadAction<TUser[]>) => {
+      state.activeUsers = action.payload;
+    },
     selectUser: (
       state,
-      action: PayloadAction<{ id: number; type: "user" | "room" }>
+      action: PayloadAction<{
+        id: number;
+        type: "user" | "room";
+        name?: string;
+      }>
     ) => {
-      state.selection = action.payload;
+      state.selection.id = action.payload.id;
+      state.selection.type = action.payload.type;
+      state.selection.name = action.payload.name;
     },
     createRoom: (state, action: PayloadAction<TRoomCreationData>) => {
       return;
     },
-    setConversations: (state, action: PayloadAction<TConversation[]>) => {
+    setConversations: (state, action: PayloadAction<IConversation[]>) => {
       state.conversations = action.payload;
     },
     addConvesation: (state, action) => {
-      state.conversations.push(action.payload);
+      state.conversations.unshift(action.payload);
+    },
+    updateConversation: (
+      state,
+      action: PayloadAction<{
+        message: { message: ISingleMessage };
+        conversation: IConversation;
+      }>
+    ) => {
+      console.log(action.payload);
+      const index = state.conversations.findIndex(
+        (conv) => conv.id === action.payload.conversation.id
+      );
+      if (index === -1) {
+        console.log(index);
+
+        state.conversations.push(action.payload.conversation);
+      } else {
+        state.conversations[index].lastMessage = action.payload.message.message;
+        state.conversations.unshift(...state.conversations.splice(index, 1));
+      }
+      selectUser(action.payload.conversation);
     },
     reciveGlobalMessage: (
       state,
-      action: PayloadAction<{ message: ISingleMessage; to: TConversation }>
+      action: PayloadAction<{
+        message: ISingleMessage;
+        to: IConversation;
+        from: TUser;
+      }>
     ) => {
-      const { id } = action.payload.to;
-      console.log(action.payload.to);
+      const { id, type } = action.payload.to;
+      const { id: childId, name } = action.payload.from;
       const index = state.conversations.findIndex((conv) => conv.id === id);
-      state.conversations[index].lastMessage = action.payload.message;
+      if (index !== -1) {
+        state.conversations[index].lastMessage = action.payload.message;
+        if (index !== 0) {
+          state.conversations.unshift(...state.conversations.splice(index, 1));
+        }
+      } else {
+        const newConversation: IConversation = {
+          id,
+          childId,
+          type,
+          name,
+        };
+        state.conversations.unshift(newConversation);
+        state.conversations[0].lastMessage = action.payload.message;
+      }
     },
-    joinRoom: (state, action: PayloadAction<TConversation>) => {
-      console.log(action.payload);
+    joinRoom: (state, action: PayloadAction<IConversation>) => {
       state.conversations.unshift(action.payload);
     },
   },
@@ -65,6 +118,7 @@ const conversationSlice = createSlice({
 export const {
   getUsers,
   setUsers,
+  setActiveUsers,
   stopListeningUser,
   selectUser,
   setConversations,
@@ -72,5 +126,6 @@ export const {
   reciveGlobalMessage,
   createRoom,
   joinRoom,
+  updateConversation,
 } = conversationSlice.actions;
 export default conversationSlice.reducer;

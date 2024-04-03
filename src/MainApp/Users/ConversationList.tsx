@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setConversations } from "../../redux/slices/instancesSlice";
 import axios from "axios";
 import ConversationItem from "./ConversationItem";
-const UsersList = () => {
+const ConversationList = () => {
   const { token } = useAppSelector((state) => state.auth);
   const { conversations } = useAppSelector((state) => state.instance);
   const dispatch = useAppDispatch();
@@ -18,9 +18,12 @@ const UsersList = () => {
       dispatch(setConversations(response.data));
     })();
   }, []);
-  console.log(conversations);
   return (
-    <Box sx={{ width: "30%", borderRight: 1, borderColor: "divider" }}>
+    <div
+      style={{
+        minWidth: "15vw",
+      }}
+    >
       <Typography variant="h6" sx={{ p: 2 }}>
         Users Online
       </Typography>
@@ -30,7 +33,7 @@ const UsersList = () => {
             <ConversationItem conversation={conversation} />
           ))}
       </List>
-    </Box>
+    </div>
   );
 };
-export default UsersList;
+export default ConversationList;

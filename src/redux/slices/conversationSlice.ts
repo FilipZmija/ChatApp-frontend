@@ -2,6 +2,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { TUser } from "../../types/user";
 import {
+  IConversation,
   IConversationData,
   IMessageToSocket,
   ISingleMessage,
@@ -10,39 +11,87 @@ import { TRoom } from "../../types/room";
 
 const initialState: IConversationData = {
   conversation: {
-    id: null,
-    childId: -1,
+    id: 0,
+    childId: 0,
     messages: [],
     type: "user",
   },
-  recipient: { name: "", id: -1, type: "user" },
+  recipient: { name: "", id: 0, type: "user" },
+  loading: false,
 };
 
 const conversationSlice = createSlice({
   name: "convesation",
   initialState,
   reducers: {
+    changeSelectedUser: (
+      state,
+      action: PayloadAction<{
+        name?: string;
+        id: number;
+        type: "user" | "room";
+      }>
+    ) => {
+      state.recipient = action.payload;
+      state.conversation = {
+        id: 0,
+        childId: 0,
+        messages: [],
+        type: "user",
+      };
+    },
     updateInfo: (state, action: PayloadAction<IConversationData>) => {
-      state.conversation = action.payload.conversation;
+      if (action.payload.conversation)
+        state.conversation = action.payload.conversation;
       state.recipient = action.payload.recipient;
+      state.loading = false;
     },
     emitMessage: (state, action: PayloadAction<IMessageToSocket>) => {
       if (state.conversation?.messages) {
         state.conversation.messages.push(action.payload.message);
       }
-      return;
     },
     reciveMessage: (state, action: PayloadAction<ISingleMessage>) => {
       if (state.conversation?.messages) {
         state.conversation.messages.push(action.payload);
       }
     },
-
+    confirmMessage: (
+      state,
+      action: PayloadAction<{
+        conversation: IConversation;
+        message: ISingleMessage;
+      }>
+    ) => {
+      if (!state.conversation.id) {
+        state.conversation.id = action.payload.conversation.id;
+        state.conversation.childId = action.payload.conversation.childId;
+        state.conversation.type = action.payload.conversation.type;
+      }
+    },
     startListeningConversation: (
       state,
       action: PayloadAction<TUser | TRoom>
     ) => {
       return;
+    },
+    startListeningCofirmationMessage: (state, action) => {
+      return;
+    },
+    stopListeningConversation: (state, action) => {
+      return;
+    },
+    clearConversation: (state) => {
+      state.conversation = {
+        id: 0,
+        childId: 0,
+        messages: [],
+        type: "user",
+      };
+      state.recipient = { name: "", id: -1, type: "user" };
+    },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
     },
   },
 });
@@ -52,5 +101,11 @@ export const {
   reciveMessage,
   updateInfo,
   startListeningConversation,
+  startListeningCofirmationMessage,
+  confirmMessage,
+  clearConversation,
+  stopListeningConversation,
+  changeSelectedUser,
+  setLoading,
 } = conversationSlice.actions;
 export default conversationSlice.reducer;

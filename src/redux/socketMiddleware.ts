@@ -7,18 +7,24 @@ import {
 } from "./slices/socketSlice";
 import SocketFactory, { SocketInterface } from "./SocketFactory";
 import {
+  confirmMessage,
   emitMessage,
   reciveMessage,
+  startListeningCofirmationMessage,
   startListeningConversation,
+  stopListeningConversation,
 } from "./slices/conversationSlice";
 import {
   createRoom,
   getUsers,
   joinRoom,
   reciveGlobalMessage,
+  setActiveUsers,
   setUsers,
   stopListeningUser,
+  updateConversation,
 } from "./slices/instancesSlice";
+import { IConversation } from "../types/messages";
 
 enum SocketEvent {
   Connect = "connect",
@@ -30,6 +36,7 @@ enum SocketEvent {
   Error = "err",
   Price = "price",
   Message = "message",
+  ActiveUsers = "activeUsers",
   Users = "users",
   getUsers = "getUsers",
   sendMessage = "sendMessage",
@@ -55,9 +62,13 @@ const socketMiddleware: Middleware = (store) => {
         socket.socket.on(SocketEvent.Message, (message) => {
           store.dispatch(reciveGlobalMessage(message));
         });
-        socket.socket.on(SocketEvent.JoinRoom, (conversation) => {
-          store.dispatch(joinRoom(conversation));
-        });
+        socket.socket.on(
+          SocketEvent.JoinRoom,
+          (conversation: IConversation) => {
+            store.dispatch(joinRoom(conversation));
+            socket.socket.emit("joinRoom", conversation.childId);
+          }
+        );
         socket.socket.on(SocketEvent.Disconnect, (reason) => {
           console.log("disconnected");
           store.dispatch(connectionLost());
@@ -66,13 +77,16 @@ const socketMiddleware: Middleware = (store) => {
     }
 
     if (getUsers.match(action) && socket) {
-      socket.socket.off(SocketEvent.Users);
+      socket.socket.off(SocketEvent.ActiveUsers);
+      socket.socket.on(SocketEvent.ActiveUsers, (message) => {
+        console.log(message);
+        store.dispatch(setActiveUsers(message));
+      });
       socket.socket.on(SocketEvent.Users, (message) => {
         console.log(message);
         store.dispatch(setUsers(message));
       });
-      console.log("here");
-      socket.socket.emit(SocketEvent.getUsers);
+      setTimeout(() => socket.socket.emit(SocketEvent.getUsers), 100);
     }
 
     if (startListeningConversation.match(action) && socket) {
@@ -85,10 +99,24 @@ const socketMiddleware: Middleware = (store) => {
       });
     }
 
+    if (stopListeningConversation.match(action) && socket) {
+      const { id, type } = action.payload;
+      socket.socket.off(type + "" + id);
+    }
+
+    if (startListeningCofirmationMessage.match(action) && socket) {
+      const { id, type } = action.payload;
+      const eventName = "confirmation" + type + "" + id;
+      socket.socket.off(eventName);
+      socket.socket.on(eventName, (message) => {
+        store.dispatch(confirmMessage(message));
+        store.dispatch(updateConversation(message));
+      });
+    }
+
     if (stopListeningUser.match(action) && socket) {
       console.log(SocketEvent.getUsers);
-
-      socket.socket.off(SocketEvent.Users);
+      socket.socket.off(SocketEvent.ActiveUsers);
     }
 
     if (emitMessage.match(action) && socket) {
