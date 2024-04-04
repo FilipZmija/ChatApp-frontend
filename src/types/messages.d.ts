@@ -37,8 +37,8 @@ export class IMessageToSocket extends IMessage {
 }
 
 export interface IMessageCreator {
-  message: ISingleMessage | { id: number; content: string };
+  message: ISingleMessage | { id: number; content: string; status: string };
   type: "first" | "middle" | "last" | "single";
   messageSender: string;
-  nextMessageSender: string;
+  nextMessageSender: string | null;
 }
