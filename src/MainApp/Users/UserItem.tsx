@@ -3,10 +3,11 @@ import { Box, Typography, Avatar, ListItemButton } from "@mui/material";
 import { TUser } from "../../types/user";
 import { selectUser } from "../../redux/slices/instancesSlice";
 import { useAppDispatch } from "../../redux/hooks";
+import { calcLastActive } from "../../helpers/time";
 
 export default function UserItem({ user }: { user: TUser }) {
   const dispatch = useAppDispatch();
-  console.log(user);
+
   return (
     <>
       <ListItemButton
@@ -36,7 +37,9 @@ export default function UserItem({ user }: { user: TUser }) {
         >
           <h3 style={{ margin: 0 }}>{user.name}</h3>
           <h5 style={{ margin: 0, fontWeight: "lighter", fontSize: "75%" }}>
-            Last active
+            {user?.active
+              ? "Online"
+              : `Last active: ${calcLastActive(user.lastActive)}`}
           </h5>
         </div>
       </ListItemButton>
