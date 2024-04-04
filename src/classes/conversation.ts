@@ -24,6 +24,7 @@ export class MessageEmitter implements IMessageToSocket {
       userId,
       createdAt: new Date().getTime(),
       user: sender,
+      status: "sent",
     };
     if (!conversation) {
       this.to = {
