@@ -2,6 +2,7 @@ import React from "react";
 import { TUser } from "../../types/user";
 import { TRoom } from "../../types/room";
 import { Avatar } from "@mui/material";
+import { calcLastActive } from "../../helpers/time";
 
 export default function Badge({ recipient }: { recipient: TUser | TRoom }) {
   recipient.type === "user" && console.log(recipient?.lastActive);
@@ -18,7 +19,7 @@ export default function Badge({ recipient }: { recipient: TUser | TRoom }) {
         paddingLeft: "0.5rem",
       }}
     >
-      {recipient.id !== -1 ? (
+      {recipient.id !== 0 ? (
         <>
           <Avatar
             sx={{
@@ -39,7 +40,7 @@ export default function Badge({ recipient }: { recipient: TUser | TRoom }) {
                 <p style={{ marginTop: "0rem" }}>Online</p>
               ) : (
                 <p style={{ marginTop: "0" }}>
-                  Last online: {recipient?.lastActive?.toString()}
+                  Last online: {calcLastActive(recipient.lastActive)}
                 </p>
               ))}
           </div>

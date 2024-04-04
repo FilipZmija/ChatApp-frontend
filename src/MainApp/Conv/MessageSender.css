@@ -1,0 +1,23 @@
+.sender-form {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  margin: 1rem;
+}
+
+.sender-container {
+  background-color: #d3d3d3;
+  border-radius: 20px;
+  width: 55vw;
+  padding: 0.3rem;
+}
+
+.sender-textbox {
+  max-height: 15vh;
+  overflow: auto;
+  margin-right: 1.2rem;
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+  padding: 0.1rem 1rem;
+  word-break: break-word;
+}

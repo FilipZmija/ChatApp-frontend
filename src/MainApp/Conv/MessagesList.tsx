@@ -20,12 +20,12 @@ const renderStyles = (messages: { userId: number }[], index: number) => {
 const messageIndicators = (amount: number, id: number) => {
   const messages: {
     userId: number;
-    message: { id: number; content: string };
+    message: { id: number; content: string; status: string };
   }[] = [];
   for (let i = 0; i < amount; i++) {
     messages.push({
       userId: Math.random() > 0.5 ? id : 0,
-      message: { id: i, content: "" },
+      message: { id: i, content: "", status: "sent" },
     });
   }
   return messages;
@@ -55,19 +55,10 @@ export default function MessagesList({
   }, [messages]);
   return (
     <>
-      <div style={{}}>
-        {id !== 0 ? (
-          messages && messages.length > 0 ? (
-            <div
-              style={{
-                height: "80vh",
-                overflow: "auto",
-                display: "flex",
-                flexDirection: "column",
-                padding: "0.5rem",
-                justifyContent: "flex-end",
-              }}
-            >
+      {id !== 0 ? (
+        <div className="messages-list-container">
+          {messages && messages.length > 0 ? (
+            <div className="messages-list">
               {messages?.map((_, index) => {
                 if (index + 1 < messages.length)
                   return (
@@ -92,9 +83,7 @@ export default function MessagesList({
                       messageSender={
                         messages[index].userId === myId ? "me" : recipient.name
                       }
-                      nextMessageSender={
-                        messages[index].userId === myId ? "me" : recipient.name
-                      }
+                      nextMessageSender={null}
                     />
                   );
               })}
@@ -118,25 +107,16 @@ export default function MessagesList({
                   );
                 })
               ) : (
-                <div
-                  style={{
-                    height: "80vh",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: "bold",
-                    fontSize: "1.5rem",
-                  }}
-                >
+                <div className="messages-landing">
                   <p>Send your first message!</p>
                 </div>
               )}
             </>
-          )
-        ) : (
-          <LandingInfo />
-        )}
-      </div>
+          )}
+        </div>
+      ) : (
+        <LandingInfo />
+      )}
     </>
   );
 }
