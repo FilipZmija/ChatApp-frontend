@@ -11,7 +11,7 @@ import MessagesList from "./MessagesList";
 import MessageSender from "./MessageSender";
 import { IConversation } from "../../types/messages";
 import Badge from "./Badge";
-
+import "./ConvStyle/Conversation.css";
 const Conversation = () => {
   const dispatch = useAppDispatch();
 
@@ -28,18 +28,10 @@ const Conversation = () => {
     return () => {
       dispatch(stopListeningConversation(recipient));
     };
-  }, [recipient]);
+  }, [recipient, dispatch]);
 
   return (
-    <div
-      style={{
-        border: "1px solid rgb(0,0,0,0.15)",
-        borderTop: "none",
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-      }}
-    >
+    <div className="conversation-container">
       <Badge recipient={recipient} />
       <MessagesList
         messages={conversationSuperData.conversation.messages}

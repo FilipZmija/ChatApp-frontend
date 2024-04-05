@@ -1,0 +1,23 @@
+.conversation-list-item-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.conversation-list-item-container > div > div > .avatar {
+  background-color: green;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-right: 0.5rem;
+  font-size: 1.75rem;
+}
+
+.message-unread {
+  font-weight: bold;
+}
+
+.dot.message-unread {
+  width: 0.75rem;
+  height: 0.75rem;
+  background-color: #3578e5;
+  border-radius: 50%;
+}

@@ -1,6 +1,6 @@
 import React from "react";
 import SendIcon from "@mui/icons-material/Send";
-import "./SendButton.css";
+import "./ConvStyle/SendButton.css";
 
 export default function SendButton() {
   return (

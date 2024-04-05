@@ -1,9 +1,9 @@
-import React, { useEffect, useLayoutEffect, useRef } from "react";
-import { IMessageCreator, ISingleMessage } from "../../types/messages";
+import React, { useLayoutEffect, useRef, useState } from "react";
+import { ISingleMessage } from "../../types/messages";
 import Message from "./Message";
 import { useAppSelector } from "../../redux/hooks";
 import LandingInfo from "./LandingInfo";
-import "./MessagesList.css";
+import "./ConvStyle/MessagesList.css";
 import { TUser } from "../../types/user";
 import { TRoom } from "../../types/room";
 
@@ -42,23 +42,52 @@ export default function MessagesList({
 }) {
   const { id: myId } = useAppSelector((state) => state.auth);
   const { loading } = useAppSelector((state) => state.conv);
-
+  const [shouldScrollToBottom, setShouldScrollToBottom] =
+    useState<boolean>(true);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesListRef = useRef<HTMLDivElement>(null);
+
   const scrollToBottom = () => {
-    messagesListRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  console.log(messagesListRef.current?.getBoundingClientRect().bottom);
+
   useLayoutEffect(() => {
-    messagesListRef.current?.scrollIntoView();
+    messagesEndRef.current?.scrollIntoView();
   }, [id]);
+
   useLayoutEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (shouldScrollToBottom) scrollToBottom();
+  }, [messages, shouldScrollToBottom]);
+
+  const handleScroll = () => {
+    messagesListRef.current &&
+      messagesEndRef.current &&
+      console.log(
+        messagesEndRef.current.getBoundingClientRect().bottom,
+        messagesListRef.current.getBoundingClientRect().bottom
+      );
+    if (
+      messagesListRef.current &&
+      messagesEndRef.current &&
+      messagesEndRef.current.getBoundingClientRect().bottom <=
+        messagesListRef.current.getBoundingClientRect().bottom
+    ) {
+      setShouldScrollToBottom(true);
+    } else {
+      setShouldScrollToBottom(false);
+    }
+  };
   return (
     <>
       {id !== 0 ? (
         <div className="messages-list-container">
           {messages && messages.length > 0 ? (
-            <div className="messages-list">
+            <div
+              className="messages-list"
+              onScroll={handleScroll}
+              ref={messagesListRef}
+            >
               {messages?.map((_, index) => {
                 if (index + 1 < messages.length)
                   return (
@@ -87,7 +116,7 @@ export default function MessagesList({
                     />
                   );
               })}
-              <div ref={messagesListRef} />
+              <div ref={messagesEndRef} />
             </div>
           ) : (
             <>

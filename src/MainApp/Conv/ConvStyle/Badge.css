@@ -1,0 +1,35 @@
+.badge-container {
+  min-height: 10vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: 0px -2px 5px 0px rgba(66, 68, 90, 1);
+  margin-right: -0.05rem;
+  margin-left: -0.05rem;
+  padding-left: 0.5rem;
+}
+.badge-container > .user-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 0.5rem;
+  p {
+    margin-top: 0;
+  }
+  h2 {
+    margin-bottom: 0;
+    margin-top: 1rem;
+  }
+}
+
+.badge-container > .avatar {
+  margin: 0.5rem;
+  width: 4rem;
+  height: 4rem;
+  font-size: 2rem;
+}
+
+.badge-container > h1 {
+  text-align: center;
+  width: 60vw;
+}

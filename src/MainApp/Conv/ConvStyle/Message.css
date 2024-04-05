@@ -1,15 +1,23 @@
 .message-container {
   display: flex;
   flex-direction: row; /* Default value, overridden conditionally below */
-  align-items: end;
   word-break: break-word;
+  align-items: flex-end;
 }
 
 .my-message-container {
   flex-direction: row-reverse;
 }
 
+.message-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 .message {
+  display: flex;
+  align-items: flex-end;
+
   max-width: 80%;
   margin: 0.2rem 0.5rem;
   padding: 0.33rem 1rem;

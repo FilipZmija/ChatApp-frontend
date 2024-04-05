@@ -6,9 +6,11 @@
 }
 
 .sender-container {
+  min-height: 2rem;
+
   background-color: #d3d3d3;
   border-radius: 20px;
-  width: 55vw;
+  width: 65vw;
   padding: 0.3rem;
 }
 
@@ -20,4 +22,11 @@
   margin-bottom: 0.2rem;
   padding: 0.1rem 1rem;
   word-break: break-word;
+}
+
+.sender-textbox:focus {
+  outline: none;
+}
+.sender-container:focus-within {
+  outline: #444 solid 2px;
 }
