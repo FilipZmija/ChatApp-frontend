@@ -1,9 +1,9 @@
-import React, { useEffect, useLayoutEffect, useRef } from "react";
-import { IMessageCreator, ISingleMessage } from "../../types/messages";
+import React, { useLayoutEffect, useRef, useState } from "react";
+import { ISingleMessage } from "../../types/messages";
 import Message from "./Message";
 import { useAppSelector } from "../../redux/hooks";
 import LandingInfo from "./LandingInfo";
-import "./MessagesList.css";
+import "./ConvStyle/MessagesList.css";
 import { TUser } from "../../types/user";
 import { TRoom } from "../../types/room";
 
@@ -20,12 +20,12 @@ const renderStyles = (messages: { userId: number }[], index: number) => {
 const messageIndicators = (amount: number, id: number) => {
   const messages: {
     userId: number;
-    message: { id: number; content: string };
+    message: { id: number; content: string; status: string };
   }[] = [];
   for (let i = 0; i < amount; i++) {
     messages.push({
       userId: Math.random() > 0.5 ? id : 0,
-      message: { id: i, content: "" },
+      message: { id: i, content: "", status: "sent" },
     });
   }
   return messages;
@@ -42,31 +42,51 @@ export default function MessagesList({
 }) {
   const { id: myId } = useAppSelector((state) => state.auth);
   const { loading } = useAppSelector((state) => state.conv);
-
+  const [shouldScrollToBottom, setShouldScrollToBottom] =
+    useState<boolean>(true);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesListRef = useRef<HTMLDivElement>(null);
+
   const scrollToBottom = () => {
-    messagesListRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  console.log(messagesListRef.current?.getBoundingClientRect().bottom);
+
   useLayoutEffect(() => {
-    messagesListRef.current?.scrollIntoView();
+    messagesEndRef.current?.scrollIntoView();
   }, [id]);
+
   useLayoutEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (shouldScrollToBottom) scrollToBottom();
+  }, [messages, shouldScrollToBottom]);
+
+  const handleScroll = () => {
+    messagesListRef.current &&
+      messagesEndRef.current &&
+      console.log(
+        messagesEndRef.current.getBoundingClientRect().bottom,
+        messagesListRef.current.getBoundingClientRect().bottom
+      );
+    if (
+      messagesListRef.current &&
+      messagesEndRef.current &&
+      messagesEndRef.current.getBoundingClientRect().bottom <=
+        messagesListRef.current.getBoundingClientRect().bottom
+    ) {
+      setShouldScrollToBottom(true);
+    } else {
+      setShouldScrollToBottom(false);
+    }
+  };
   return (
     <>
-      <div style={{}}>
-        {id !== 0 ? (
-          messages && messages.length > 0 ? (
+      {id !== 0 ? (
+        <div className="messages-list-container">
+          {messages && messages.length > 0 ? (
             <div
-              style={{
-                height: "80vh",
-                overflow: "auto",
-                display: "flex",
-                flexDirection: "column",
-                padding: "0.5rem",
-                justifyContent: "flex-end",
-              }}
+              className="messages-list"
+              onScroll={handleScroll}
+              ref={messagesListRef}
             >
               {messages?.map((_, index) => {
                 if (index + 1 < messages.length)
@@ -92,13 +112,11 @@ export default function MessagesList({
                       messageSender={
                         messages[index].userId === myId ? "me" : recipient.name
                       }
-                      nextMessageSender={
-                        messages[index].userId === myId ? "me" : recipient.name
-                      }
+                      nextMessageSender={null}
                     />
                   );
               })}
-              <div ref={messagesListRef} />
+              <div ref={messagesEndRef} />
             </div>
           ) : (
             <>
@@ -118,25 +136,16 @@ export default function MessagesList({
                   );
                 })
               ) : (
-                <div
-                  style={{
-                    height: "80vh",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: "bold",
-                    fontSize: "1.5rem",
-                  }}
-                >
+                <div className="messages-landing">
                   <p>Send your first message!</p>
                 </div>
               )}
             </>
-          )
-        ) : (
-          <LandingInfo />
-        )}
-      </div>
+          )}
+        </div>
+      ) : (
+        <LandingInfo />
+      )}
     </>
   );
 }

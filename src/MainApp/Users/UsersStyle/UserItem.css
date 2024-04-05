@@ -1,0 +1,26 @@
+.user-list-item-container {
+  flex-direction: row;
+  align-items: center;
+}
+
+.user-list-item-container > .avatar {
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.user-list-item-container > .user-list-item-info {
+  margin-left: 0.5rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid #ddd;
+  width: 100%;
+  h3 {
+    margin: 0;
+  }
+  h5 {
+    margin: 0;
+    font-weight: lighter;
+    font-size: 75%;
+  }
+}

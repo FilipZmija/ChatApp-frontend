@@ -1,0 +1,23 @@
+.main-container {
+  display: grid;
+  grid-template-columns: repeat(16, 6.25vw);
+  grid-template-rows: repeat(10, 10vh);
+}
+
+.main-container > .conversation-list {
+  display: grid;
+  grid-column: 1/4;
+  grid-row: 1/11;
+}
+
+.main-container > .conversation {
+  display: grid;
+  grid-column: 4/14;
+  grid-row: 1/11;
+}
+
+.main-container > .user-list {
+  display: grid;
+  grid-column: 14/17;
+  grid-row: 1/11;
+}

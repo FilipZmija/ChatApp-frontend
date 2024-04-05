@@ -1,0 +1,24 @@
+.messages-list-container {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+.messages-list {
+  display: flex;
+  overflow: auto;
+
+  flex-direction: column;
+  padding: 0.5rem;
+}
+
+.messages-landing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.5rem;
+  height: 100%;
+}

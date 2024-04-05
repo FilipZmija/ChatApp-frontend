@@ -1,6 +1,5 @@
 import React from "react";
-import ChatIcon from "@mui/icons-material/Chat";
-import "./LandingInfo.css";
+import "./ConvStyle/LandingInfo.css";
 const WelcomeScreen = () => {
   return (
     <div className="welcome-container">

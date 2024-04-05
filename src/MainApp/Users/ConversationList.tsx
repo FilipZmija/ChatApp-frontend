@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Box, List, Typography } from "@mui/material";
+import React, { useEffect } from "react";
+import { List, Typography } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setConversations } from "../../redux/slices/instancesSlice";
 import axios from "axios";
 import ConversationItem from "./ConversationItem";
+import "./UsersStyle/ConvesationList.css";
 const ConversationList = () => {
   const { token } = useAppSelector((state) => state.auth);
   const { conversations } = useAppSelector((state) => state.instance);
@@ -17,13 +18,10 @@ const ConversationList = () => {
       );
       dispatch(setConversations(response.data));
     })();
-  }, []);
+  }, [dispatch, token]);
+
   return (
-    <div
-      style={{
-        minWidth: "15vw",
-      }}
-    >
+    <div className="conversation-list-container">
       <Typography variant="h6" sx={{ p: 2 }}>
         Users Online
       </Typography>
