@@ -7,7 +7,9 @@ import "./UsersStyle/UserList.css";
 import SearchBar from "./SearchBar";
 
 export default function UserList() {
-  const { users, activeUsers } = useAppSelector((state) => state.instance);
+  const { users, activeUsers, searchedUsers } = useAppSelector(
+    (state) => state.instance
+  );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -16,16 +18,25 @@ export default function UserList() {
   return (
     <div className="users-list-container">
       <SearchBar />
-      <List>
-        {activeUsers.length > 0 && <h2>Active users</h2>}
-        {activeUsers.map((item) => (
-          <UserItem user={item} />
-        ))}
-        {users.length > 0 && <h2>Other </h2>}
-        {users.map((item) => (
-          <UserItem user={item} />
-        ))}
-      </List>
+      {searchedUsers.length > 0 ? (
+        <List>
+          {searchedUsers.length > 0 && <h2>Search results</h2>}
+          {searchedUsers.map((item) => (
+            <UserItem user={item} />
+          ))}
+        </List>
+      ) : (
+        <List>
+          {activeUsers.length > 0 && <h2>Active users</h2>}
+          {activeUsers.map((item) => (
+            <UserItem user={item} />
+          ))}
+          {users.length > 0 && <h2>Other </h2>}
+          {users.map((item) => (
+            <UserItem user={item} />
+          ))}
+        </List>
+      )}
     </div>
   );
 }
