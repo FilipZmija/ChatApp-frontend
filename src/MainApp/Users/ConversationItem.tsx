@@ -8,7 +8,7 @@ import { IConversation } from "../../types/messages";
 import { selectUser } from "../../redux/slices/instancesSlice";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "../../redux/hooks";
-
+import "./UsersStyle/ConversationItem.css";
 export default function ConversationItem({
   conversation,
 }: {
@@ -17,8 +17,10 @@ export default function ConversationItem({
   const dispatch = useDispatch();
   const selectedUser = useAppSelector((state) => state.instance.selection);
   const { id: currentUserId } = useAppSelector((state) => state.auth);
+  const messageSeen = conversation?.lastMessage?.status !== "seen";
+
   return (
-    <div style={{ overflow: "hidden" }}>
+    <div className="conversation-list-item-container">
       <ListItemButton
         key={conversation.id}
         onClick={() =>
@@ -34,38 +36,39 @@ export default function ConversationItem({
         selected={selectedUser.id === conversation.childId}
         divider
       >
-        <ListItemAvatar sx={{ marginRight: "0.5rem" }}>
-          <Avatar
-            sx={{
-              bgcolor: conversation ? "green" : "red",
-              width: "3.5rem",
-              height: "3.5rem",
-            }}
-          >
+        <ListItemAvatar>
+          <Avatar className="avatar">
             {conversation.name?.charAt(0).toUpperCase() || "R"}
           </Avatar>
         </ListItemAvatar>
         <ListItemText
-          primary={conversation.name}
+          primary={
+            <span className={`${messageSeen && "message-unread"}`}>
+              {conversation.name}
+            </span>
+          }
           secondary={
             conversation.lastMessage ? (
               <>
                 {conversation.lastMessage.user.id === currentUserId ? (
-                  <span style={{ color: "blue" }}>You: </span>
+                  <span className={`${messageSeen && "message-unread"}`}>
+                    You:{" "}
+                  </span>
                 ) : (
                   conversation.type === "room" && (
-                    <span style={{ color: "green" }}>
+                    <span className={`${messageSeen && "message-unread"}`}>
                       {conversation.lastMessage.user.name}:{" "}
                     </span>
                   )
                 )}
                 {conversation.lastMessage.content.length > 20 ? (
-                  <>{conversation.lastMessage.content.slice(0, 20)}...</>
+                  <span className={`${messageSeen && "message-unread"}`}>
+                    {conversation.lastMessage.content.slice(0, 20)}...
+                  </span>
                 ) : (
-                  conversation.lastMessage.content
-                )}
-                {conversation.lastMessage.status == "seen" && (
-                  <span style={{ color: "red" }}> (Unread)</span>
+                  <span className={`${messageSeen && "message-unread"}`}>
+                    {conversation.lastMessage.content}
+                  </span>
                 )}
                 {" • "}
                 {new Date(
@@ -91,8 +94,8 @@ export default function ConversationItem({
               "No messages"
             )
           }
-          sx={{ color: conversation ? "green" : "red" }}
         />
+        <div className={`dot ${messageSeen && "message-unread"}`}></div>
       </ListItemButton>
     </div>
   );

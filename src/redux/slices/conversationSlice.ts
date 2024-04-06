@@ -43,6 +43,9 @@ const conversationSlice = createSlice({
     updateInfo: (state, action: PayloadAction<IConversationData>) => {
       if (action.payload.conversation)
         state.conversation = action.payload.conversation;
+      else {
+        state.conversation = initialState.conversation;
+      }
       state.recipient = action.payload.recipient;
       state.loading = false;
     },

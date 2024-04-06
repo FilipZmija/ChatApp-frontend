@@ -1,7 +1,7 @@
 import React from "react";
 import { IMessageCreator } from "../../types/messages";
 import { Avatar, Skeleton } from "@mui/material";
-import "./Message.css";
+import "./ConvStyle/Message.css";
 
 export default function Message({
   message,
@@ -17,7 +17,6 @@ export default function Message({
   const isLastMyMessage =
     (type === "last" || type === "single") && messageSender === "me";
   const isLastMessageInConversation = !nextMessageSender;
-  console.log(message);
   return (
     <div
       key={message.id}
@@ -32,7 +31,7 @@ export default function Message({
           {messageSender.charAt(0)}
         </Avatar>
       )}
-      <div>
+      <div className="message-box">
         {isFirstGuestMessage && <p className="sender">{messageSender}</p>}
         <p
           className={`message ${

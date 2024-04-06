@@ -13,11 +13,6 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { createRoom } from "../../redux/slices/instancesSlice";
 
-interface UserData {
-  id: number;
-  name: string;
-}
-
 export default function FormDialog() {
   const { token } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();

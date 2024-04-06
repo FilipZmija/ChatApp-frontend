@@ -1,0 +1,7 @@
+.users-list-container > ul > h2 {
+  margin-left: 1rem;
+}
+
+.users-list-container {
+  overflow: auto;
+}
