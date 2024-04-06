@@ -12,6 +12,8 @@ export interface SocketState {
   rooms: string[];
   users: TUser[];
   activeUsers: TUser[];
+  searchedUsers: TUser[];
+  searchLoading: boolean;
   conversations: IConversation[];
   selection: { id: number; name?: string; type: "user" | "room" };
 }
@@ -19,6 +21,8 @@ export interface SocketState {
 const initialState: SocketState = {
   users: [],
   activeUsers: [],
+  searchedUsers: [],
+  searchLoading: false,
   rooms: [],
   conversations: [],
   selection: { id: -1, type: "user" },
@@ -39,6 +43,13 @@ const conversationSlice = createSlice({
     },
     setActiveUsers: (state, action: PayloadAction<TUser[]>) => {
       state.activeUsers = action.payload;
+    },
+    setSearchedUsers: (state, action: PayloadAction<TUser[]>) => {
+      state.searchedUsers = action.payload;
+      state.searchLoading = false;
+    },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.searchLoading = action.payload;
     },
     selectUser: (
       state,
@@ -119,7 +130,9 @@ export const {
   getUsers,
   setUsers,
   setActiveUsers,
+  setSearchedUsers,
   stopListeningUser,
+  setLoading,
   selectUser,
   setConversations,
   addConvesation,
