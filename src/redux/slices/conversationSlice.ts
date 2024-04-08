@@ -51,6 +51,7 @@ const conversationSlice = createSlice({
     },
     emitMessage: (state, action: PayloadAction<IMessageToSocket>) => {
       if (state.conversation?.messages) {
+        console.log(action.payload);
         state.conversation.messages.push(action.payload.message);
       }
     },
@@ -63,13 +64,24 @@ const conversationSlice = createSlice({
       state,
       action: PayloadAction<{
         conversation: IConversation;
-        message: ISingleMessage;
+        message: { message: ISingleMessage };
       }>
     ) => {
+      const { createdAt: messageCreatedAt, content } =
+        action.payload.message.message;
       if (!state.conversation.id) {
         state.conversation.id = action.payload.conversation.id;
         state.conversation.childId = action.payload.conversation.childId;
         state.conversation.type = action.payload.conversation.type;
+      }
+      if (state.conversation.messages) {
+        const index = state.conversation.messages.findIndex(
+          (item) =>
+            item.createdAt === messageCreatedAt && item.content === content
+        );
+        if (index !== -1)
+          state.conversation.messages[index].status =
+            action.payload.message.message.status;
       }
     },
     startListeningConversation: (
@@ -96,6 +108,13 @@ const conversationSlice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
+    loadMoreMessages: (state, action: PayloadAction<ISingleMessage[]>) => {
+      if (state.conversation.messages) {
+        state.conversation.messages?.unshift(...action.payload);
+        return;
+      }
+      state.conversation.messages = action.payload;
+    },
   },
 });
 
@@ -110,5 +129,6 @@ export const {
   stopListeningConversation,
   changeSelectedUser,
   setLoading,
+  loadMoreMessages,
 } = conversationSlice.actions;
 export default conversationSlice.reducer;

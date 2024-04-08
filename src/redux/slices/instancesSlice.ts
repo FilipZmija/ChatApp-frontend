@@ -1,11 +1,7 @@
 // Slice of store that manages Socket connections
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { TUser } from "../../types/user";
-import {
-  ISingleMessage,
-  IConversation,
-  IConversationData,
-} from "../../types/messages";
+import { ISingleMessage, IConversation } from "../../types/messages";
 import { TRoomCreationData } from "../../types/room";
 
 export interface SocketState {
@@ -48,6 +44,27 @@ const conversationSlice = createSlice({
       state.searchedUsers = action.payload;
       state.searchLoading = false;
     },
+    updateUser: (state, action: PayloadAction<TUser>) => {
+      const { active } = action.payload;
+      const indexActive = state.activeUsers.findIndex(
+        (user) => user.id === action.payload.id
+      );
+      const indexUnactive = state.users.findIndex(
+        (user) => user.id === action.payload.id
+      );
+
+      if (active && indexActive === -1) {
+        state.users = state.users.filter(
+          (user) => user.id !== action.payload.id
+        );
+        state.activeUsers.unshift(action.payload);
+      } else if (!active && indexUnactive === -1) {
+        state.activeUsers = state.activeUsers.filter(
+          (user) => user.id !== action.payload.id
+        );
+        state.users.unshift(action.payload);
+      }
+    },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.searchLoading = action.payload;
     },
@@ -86,7 +103,10 @@ const conversationSlice = createSlice({
       if (index === -1) {
         console.log(index);
 
-        state.conversations.push(action.payload.conversation);
+        state.conversations.unshift({
+          ...action.payload.conversation,
+          lastMessage: action.payload.message.message,
+        });
       } else {
         state.conversations[index].lastMessage = action.payload.message.message;
         state.conversations.unshift(...state.conversations.splice(index, 1));
@@ -140,5 +160,6 @@ export const {
   createRoom,
   joinRoom,
   updateConversation,
+  updateUser,
 } = conversationSlice.actions;
 export default conversationSlice.reducer;

@@ -23,6 +23,7 @@ import {
   setUsers,
   stopListeningUser,
   updateConversation,
+  updateUser,
 } from "./slices/instancesSlice";
 import { IConversation } from "../types/messages";
 
@@ -39,6 +40,7 @@ enum SocketEvent {
   ActiveUsers = "activeUsers",
   Users = "users",
   getUsers = "getUsers",
+  User = "user",
   sendMessage = "sendMessage",
   CreateRoom = "createRoom",
 }
@@ -78,6 +80,9 @@ const socketMiddleware: Middleware = (store) => {
 
     if (getUsers.match(action) && socket) {
       socket.socket.off(SocketEvent.ActiveUsers);
+      socket.socket.off(SocketEvent.Users);
+      socket.socket.off(SocketEvent.User);
+
       socket.socket.on(SocketEvent.ActiveUsers, (message) => {
         console.log(message);
         store.dispatch(setActiveUsers(message));
@@ -85,6 +90,9 @@ const socketMiddleware: Middleware = (store) => {
       socket.socket.on(SocketEvent.Users, (message) => {
         console.log(message);
         store.dispatch(setUsers(message));
+      });
+      socket.socket.on(SocketEvent.User, (message) => {
+        store.dispatch(updateUser(message));
       });
       setTimeout(() => socket.socket.emit(SocketEvent.getUsers), 100);
     }
