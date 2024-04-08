@@ -14,7 +14,6 @@ import Badge from "./Badge";
 import "./ConvStyle/Conversation.css";
 const Conversation = () => {
   const dispatch = useAppDispatch();
-
   const conversationSuperData = useAppSelector((state) => state.conv);
   const {
     recipient,
@@ -38,8 +37,8 @@ const Conversation = () => {
         key={"Converastion" + conversation.id}
         id={recipient.id}
         recipient={recipient}
+        conversationId={conversation.id}
       />
-
       {recipient.id !== 0 && (
         <MessageSender conversation={conversation} recipient={recipient} />
       )}

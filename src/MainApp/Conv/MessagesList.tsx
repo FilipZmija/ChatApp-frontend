@@ -1,11 +1,13 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { ISingleMessage } from "../../types/messages";
 import Message from "./Message";
-import { useAppSelector } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import LandingInfo from "./LandingInfo";
 import "./ConvStyle/MessagesList.css";
 import { TUser } from "../../types/user";
 import { TRoom } from "../../types/room";
+import axios from "axios";
+import { loadMoreMessages } from "../../redux/slices/conversationSlice";
 
 const renderStyles = (messages: { userId: number }[], index: number) => {
   if (messages[index]?.userId !== messages[index - 1]?.userId) {
@@ -35,23 +37,81 @@ export default function MessagesList({
   messages,
   id,
   recipient,
+  conversationId,
 }: {
   messages: ISingleMessage[] | undefined;
   id: number;
   recipient: TUser | TRoom;
+  conversationId: number;
 }) {
+  const dispatch = useAppDispatch();
+  const [page, setPage] = useState<number>(2);
   const { id: myId } = useAppSelector((state) => state.auth);
   const { loading } = useAppSelector((state) => state.conv);
+  const { token } = useAppSelector((state) => state.auth);
+  const [loadingNewMessages, setLoadingNewMessages] = useState<boolean>(false);
   const [shouldScrollToBottom, setShouldScrollToBottom] =
     useState<boolean>(true);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesListRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const [distanceTop, setDistanceTop] = useState(0);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-  console.log(messagesListRef.current?.getBoundingClientRect().bottom);
 
+  const getMessages = useCallback(async () => {
+    try {
+      setLoadingNewMessages(true);
+      const params = new URLSearchParams();
+      params.append("page", page.toString());
+      console.log(page);
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/messages/${conversationId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params,
+        }
+      );
+      console.log(response.data.messages);
+      dispatch(loadMoreMessages(response.data.messages));
+      setPage(page + 1);
+      setLoadingNewMessages(false);
+    } catch (e) {
+      console.log(e);
+    }
+  }, [page, conversationId, token, dispatch]);
+
+  const scrollListenerTop = useCallback(async () => {
+    if (messagesListRef.current) {
+      let top = messagesListRef.current.scrollTop;
+      if (!distanceTop) {
+        setDistanceTop(Math.round(messagesListRef.current.clientHeight * 0.1));
+      }
+      if (top < distanceTop && !loadingNewMessages) {
+        const prevScrollHeight = messagesListRef.current.scrollHeight;
+        await getMessages();
+        const newScrollHeight = messagesListRef.current.scrollHeight;
+        const scrollHeightDifference = newScrollHeight - prevScrollHeight;
+        messagesListRef.current.scrollTop += scrollHeightDifference;
+      }
+    }
+  }, [distanceTop, loadingNewMessages, getMessages]);
+
+  useLayoutEffect(() => {
+    if (messages) {
+      const tableRef = messagesListRef.current;
+      if (tableRef) {
+        tableRef.addEventListener("scroll", scrollListenerTop);
+        return () => {
+          tableRef.removeEventListener("scroll", scrollListenerTop);
+        };
+      }
+    }
+  }, [messages, scrollListenerTop]);
   useLayoutEffect(() => {
     messagesEndRef.current?.scrollIntoView();
   }, [id]);
@@ -60,13 +120,7 @@ export default function MessagesList({
     if (shouldScrollToBottom) scrollToBottom();
   }, [messages, shouldScrollToBottom]);
 
-  const handleScroll = () => {
-    messagesListRef.current &&
-      messagesEndRef.current &&
-      console.log(
-        messagesEndRef.current.getBoundingClientRect().bottom,
-        messagesListRef.current.getBoundingClientRect().bottom
-      );
+  const handleScroll = async () => {
     if (
       messagesListRef.current &&
       messagesEndRef.current &&
@@ -78,6 +132,7 @@ export default function MessagesList({
       setShouldScrollToBottom(false);
     }
   };
+
   return (
     <>
       {id !== 0 ? (
