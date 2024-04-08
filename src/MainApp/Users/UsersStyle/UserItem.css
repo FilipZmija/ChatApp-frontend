@@ -24,3 +24,24 @@
     font-size: 75%;
   }
 }
+
+a.users-loadmore-button {
+  margin: 1rem 7.5rem 0 7.5rem;
+  text-decoration: text-decoration-line;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.5rem;
+  color: #999;
+  text-decoration: none;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+
+a.users-loadmore-button:hover {
+  background-color: #efefef;
+}
+
+a.users-loadmore-button:active {
+  background-color: #d9d9d9;
+}

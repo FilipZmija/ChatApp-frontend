@@ -18,11 +18,10 @@ export default function ConversationItem({
   const selectedUser = useAppSelector((state) => state.instance.selection);
   const { id: currentUserId } = useAppSelector((state) => state.auth);
   const messageSeen = conversation?.lastMessage?.status !== "seen";
-
   return (
     <div className="conversation-list-item-container">
       <ListItemButton
-        key={conversation.id}
+        key={conversation?.id}
         onClick={() =>
           conversation.childId &&
           dispatch(
