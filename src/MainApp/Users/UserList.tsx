@@ -80,8 +80,8 @@ export default function UserList() {
       console.log(e);
     }
   };
-
-  useScrollBottom(userListRef, fetchMoreUsers, !loadingUsers && !!username);
+  const conditions = !loadingUsers && !!username;
+  useScrollBottom(userListRef, fetchMoreUsers, conditions);
 
   return (
     <div className="users-list-container" ref={userListRef}>

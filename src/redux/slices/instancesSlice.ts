@@ -96,13 +96,10 @@ const conversationSlice = createSlice({
         conversation: IConversation;
       }>
     ) => {
-      console.log(action.payload);
       const index = state.conversations.findIndex(
         (conv) => conv.id === action.payload.conversation.id
       );
       if (index === -1) {
-        console.log(index);
-
         state.conversations.unshift({
           ...action.payload.conversation,
           lastMessage: action.payload.message.message,
@@ -112,6 +109,13 @@ const conversationSlice = createSlice({
         state.conversations.unshift(...state.conversations.splice(index, 1));
       }
       selectUser(action.payload.conversation);
+    },
+    readLastMessage: (state, action: PayloadAction<number>) => {
+      state.conversations.forEach((conv) => {
+        if (conv.lastMessage && conv.id === action.payload) {
+          conv.lastMessage.status = "seen";
+        }
+      });
     },
     reciveGlobalMessage: (
       state,
@@ -161,5 +165,6 @@ export const {
   joinRoom,
   updateConversation,
   updateUser,
+  readLastMessage,
 } = conversationSlice.actions;
 export default conversationSlice.reducer;

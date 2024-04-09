@@ -20,7 +20,7 @@ export default function UserItem({ user }: { user: TUser }) {
           <h5>
             {user?.active
               ? "Online"
-              : `Last active: ${calcLastActive(user.lastActive)}`}
+              : `Active ${calcLastActive(user.lastActive)}`}
           </h5>
         </div>
       </ListItemButton>

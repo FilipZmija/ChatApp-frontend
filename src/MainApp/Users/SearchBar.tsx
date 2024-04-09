@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { TextField, Box } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useAppSelector } from "../../redux/hooks";
 import "./UsersStyle/SearchBar.css";
 
 const SearchBar = ({

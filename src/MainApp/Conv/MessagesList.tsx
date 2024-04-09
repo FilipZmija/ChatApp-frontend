@@ -1,4 +1,10 @@
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { ISingleMessage } from "../../types/messages";
 import Message from "./Message";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
@@ -7,7 +13,11 @@ import "./ConvStyle/MessagesList.css";
 import { TUser } from "../../types/user";
 import { TRoom } from "../../types/room";
 import axios from "axios";
-import { loadMoreMessages } from "../../redux/slices/conversationSlice";
+import {
+  loadMoreMessages,
+  readMessages,
+} from "../../redux/slices/conversationSlice";
+import { readLastMessage } from "../../redux/slices/instancesSlice";
 
 const renderStyles = (messages: { userId: number }[], index: number) => {
   if (messages[index]?.userId !== messages[index - 1]?.userId) {
@@ -46,6 +56,7 @@ export default function MessagesList({
 }) {
   const dispatch = useAppDispatch();
   const [page, setPage] = useState<number>(2);
+  const [isActive, setIsActive] = useState<boolean>(true);
   const { id: myId } = useAppSelector((state) => state.auth);
   const { loading } = useAppSelector((state) => state.conv);
   const { token } = useAppSelector((state) => state.auth);
@@ -54,12 +65,30 @@ export default function MessagesList({
     useState<boolean>(true);
   const messagesListRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
+  const lastMessageId = messages?.at(-1)?.id;
   const [distanceTop, setDistanceTop] = useState(0);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    document.addEventListener("visibilitychange", () =>
+      setIsActive(!document.hidden)
+    );
+    return () => {
+      document.removeEventListener("visibilitychange", () => {
+        setIsActive(!document.hidden);
+      });
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isActive && lastMessageId && conversationId) {
+      dispatch(readMessages({ conversationId, messageId: lastMessageId }));
+      dispatch(readLastMessage(conversationId));
+    }
+  }, [isActive, lastMessageId, conversationId, dispatch]);
 
   const getMessages = useCallback(async () => {
     try {

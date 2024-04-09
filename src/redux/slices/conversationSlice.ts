@@ -9,6 +9,34 @@ import {
 } from "../../types/messages";
 import { TRoom } from "../../types/room";
 
+const readMessagesHelper = (
+  state: IConversationData,
+  conversationId: number,
+  messageId: number,
+  reader: boolean
+) => {
+  if (state.conversation.id === conversationId) {
+    if (state.conversation.messages) {
+      state.conversation.messages = state.conversation.messages.map(
+        (message) => {
+          console.log(messageId, message.id);
+
+          if (
+            (reader
+              ? message.userId === state.recipient.id
+              : message.userId !== state.recipient.id) &&
+            message.id &&
+            message.id <= messageId &&
+            message.status === "delivered"
+          ) {
+            message.status = "seen";
+          }
+          return message;
+        }
+      );
+    }
+  }
+};
 const initialState: IConversationData = {
   conversation: {
     id: 0,
@@ -79,9 +107,12 @@ const conversationSlice = createSlice({
           (item) =>
             item.createdAt === messageCreatedAt && item.content === content
         );
+        console.log(index);
         if (index !== -1)
           state.conversation.messages[index].status =
             action.payload.message.message.status;
+        state.conversation.messages[index].id =
+          action.payload.message.message.id;
       }
     },
     startListeningConversation: (
@@ -95,6 +126,27 @@ const conversationSlice = createSlice({
     },
     stopListeningConversation: (state, action) => {
       return;
+    },
+
+    readMessages: (
+      state,
+      action: PayloadAction<{
+        conversationId: number;
+        messageId: number;
+      }>
+    ) => {
+      const { conversationId, messageId } = action.payload;
+      readMessagesHelper(state, conversationId, messageId, true);
+    },
+    reciveReadMessages: (
+      state,
+      action: PayloadAction<{
+        conversationId: number;
+        messageId: number;
+      }>
+    ) => {
+      const { conversationId, messageId } = action.payload;
+      readMessagesHelper(state, conversationId, messageId, false);
     },
     clearConversation: (state) => {
       state.conversation = {
@@ -130,5 +182,7 @@ export const {
   changeSelectedUser,
   setLoading,
   loadMoreMessages,
+  readMessages,
+  reciveReadMessages,
 } = conversationSlice.actions;
 export default conversationSlice.reducer;

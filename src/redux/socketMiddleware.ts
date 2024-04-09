@@ -9,7 +9,9 @@ import SocketFactory, { SocketInterface } from "./SocketFactory";
 import {
   confirmMessage,
   emitMessage,
+  readMessages,
   reciveMessage,
+  reciveReadMessages,
   startListeningCofirmationMessage,
   startListeningConversation,
   stopListeningConversation,
@@ -43,6 +45,7 @@ enum SocketEvent {
   User = "user",
   sendMessage = "sendMessage",
   CreateRoom = "createRoom",
+  ReadMessages = "readMessages",
 }
 
 const socketMiddleware: Middleware = (store) => {
@@ -75,6 +78,20 @@ const socketMiddleware: Middleware = (store) => {
           console.log("disconnected");
           store.dispatch(connectionLost());
         });
+        socket.socket.on(
+          SocketEvent.ReadMessages,
+          ({
+            conversationId,
+            messageId,
+          }: {
+            conversationId: number;
+            messageId: number;
+          }) => {
+            console.log("witam potwierdzam");
+
+            store.dispatch(reciveReadMessages({ conversationId, messageId }));
+          }
+        );
       }
     }
 
@@ -133,6 +150,10 @@ const socketMiddleware: Middleware = (store) => {
 
     if (createRoom.match(action) && socket) {
       socket.socket.emit(SocketEvent.CreateRoom, action.payload);
+    }
+
+    if (readMessages.match(action) && socket) {
+      socket.socket.emit(SocketEvent.ReadMessages, action.payload);
     }
 
     next(action);
