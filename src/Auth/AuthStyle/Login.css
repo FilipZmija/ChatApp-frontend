@@ -1,0 +1,153 @@
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background-color: #f4f4f4;
+}
+.landing-container {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.landing-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20vw;
+  background-color: #ffffff;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  h2 {
+    font-size: 2rem;
+  }
+}
+
+.login-container p {
+  margin-top: 0;
+  font-size: 1rem;
+  text-align: justify;
+  color: #333;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 300px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  h2 {
+    font-size: 2rem;
+  }
+}
+
+div.login-input {
+  margin: 0.25rem;
+}
+div.password-input {
+  margin: 0.25rem;
+}
+
+.input-group {
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  transition: border-color 0.3s ease;
+}
+
+.input-group input:focus {
+  border-color: #007bff;
+}
+
+button.login-button {
+  width: 60%;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 8px 0;
+  transition: background-color 0.3s ease;
+}
+
+button.login-button:hover {
+  background-color: #0056b3;
+}
+a {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.login-form > a > button.register-button {
+  padding: 12px;
+  font-size: 16px;
+  background-color: #ffffff;
+  color: #007bff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 8px 0;
+  transition: background-color 0.3s ease;
+}
+
+.login-form > a > button.register-button:hover {
+  background-color: #e0eaf5;
+}
+
+button.try-me-button {
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 8px 0;
+  transition: background-color 0.3s ease;
+}
+button.try-me-button:hover {
+  background-color: #0056b3;
+}
+button.login-mode-button {
+  padding: 12px;
+  font-size: 16px;
+  background-color: #ffffff;
+  color: #007bff;
+  border: 1px solid #007bff;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 8px 0;
+  transition: background-color 0.3s ease;
+}
+
+button.login-mode-button:hover {
+  background-color: #e0eaf5;
+}

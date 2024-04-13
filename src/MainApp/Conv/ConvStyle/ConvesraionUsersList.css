@@ -1,0 +1,6 @@
+div.dialog-user-list-container {
+  max-height: 60vh;
+  width: 20vw;
+  margin: 1rem;
+  overflow: auto;
+}

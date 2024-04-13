@@ -22,7 +22,7 @@ export class MessageEmitter implements IMessageToSocket {
       content: messageContent,
       id: null,
       userId,
-      createdAt: new Date().getTime(),
+      createdAt: new Date().toString(),
       user: sender,
       status: "sent",
     };
@@ -32,6 +32,7 @@ export class MessageEmitter implements IMessageToSocket {
         childId: recipient.id,
         type: "user",
         name: recipient.name,
+        users: [],
       };
     } else {
       this.to =
@@ -40,12 +41,14 @@ export class MessageEmitter implements IMessageToSocket {
               id: conversation.id,
               childId: recipient.id,
               type: "user",
+              users: conversation.users,
             }
           : {
               id: conversation.id,
               childId: recipient.id,
               name: conversation.name,
               type: "room",
+              users: conversation.users,
             };
     }
   }

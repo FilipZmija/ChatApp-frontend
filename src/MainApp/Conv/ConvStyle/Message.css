@@ -95,3 +95,16 @@ div.message-container > .avatar {
   left: 0.5rem;
   text-align: right;
 }
+
+.last-message-guest {
+  margin-bottom: 0.25rem;
+}
+
+.message-time {
+  font-size: 0.7rem;
+  font-weight: 300;
+  padding: 0;
+  margin-left: 0.5rem;
+  margin: 0;
+  text-align: center;
+}

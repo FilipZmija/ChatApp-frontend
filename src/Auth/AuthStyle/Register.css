@@ -1,0 +1,75 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: #f4f4f4;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 300px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #ffffff;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.register-form h2 {
+  font-size: 2rem;
+  margin: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.register-form h4 {
+  margin: 0.25rem;
+  color: rgb(240, 56, 56);
+  margin-bottom: 1rem;
+}
+
+.register-form h4.success {
+  margin: 0.25rem;
+  color: rgb(63, 174, 44);
+  margin-bottom: 1rem;
+}
+
+.register-form .register-input {
+  margin: 0.25rem;
+}
+
+.register-form button.register-button {
+  width: 60%;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 8px 0;
+  transition: background-color 0.3s ease;
+}
+
+.register-form button.register-button:hover {
+  background-color: #0056b3;
+}
+
+.register-form a button.login-button {
+  padding: 12px;
+  font-size: 16px;
+  background-color: #ffffff;
+  color: #007bff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 8px 0;
+  transition: background-color 0.3s ease;
+}
+
+.register-form a button.login-button:hover {
+  background-color: #e0eaf5;
+}
