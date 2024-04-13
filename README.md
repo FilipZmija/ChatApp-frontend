@@ -1,46 +1,45 @@
-# Getting Started with Create React App
+# Chat app
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This repository is part of chatting app project containing frontend and backend implementation. Here you can find fully implemeneted frontent application that is ready to be run with corresponding backend with it. 
+You can try the app here:
+You have a choice of trying test user or creating your own account and logging in. Once logged in user sees main screen, on the left side there is list of exisitng conversations that can be choosen, on the right there is a list of active and unactive users that can be searched via textfield that is placed on top of it. Once conversation or user is choosen a conversation view is displayed with previous messages, info about conversation and possibility of sending a message.
 
-## Available Scripts
+## 1. Features
+- User authentication: Users can create an account and log in safely.
+- Real-time messaging: App allows real-time messaging/
+- Message history: Previous messages are stored and displayed in each conversation.
+- User is able to search for exisitng users and start new conversations with them as well as create chatting rooms with multiple users.
 
-In the project directory, you can run:
+## 2. Tech stack
+- HTML + CSS
+- React
+- TypeScript
+- React Redux
+- socket.io
+- Material UI
+- Axios
+Frontend application was created with React and TypeScript. Some of the components were created with usage of MUI library, however multiple of them were designed by myself with css files. 
+Since the project required using state of other components all around the application I choosed React Redux as a state management library that allowed to share the state all over the application as well as create very well designed socket factory to be able to easliy communicate with backend of this project. Since backend was designed to fully operate on sockets and API axios library came helpfull with API communication.
 
-### `npm start`
+## 3. How does it work
+### Sockets
+Messaging on the frontend side was implemented with usage of socket.io library that was mostly placed in SocketFactory that esatbilishes communication with backend with sockets and is able to communicate in real-time. By placing socketmiddleware in react redux and implementing event listeners I was able to create multiple functions that could further modify store data with recived events. Events such as messaging, user acitvity change or creating new rooms are socket based and client is listening to them all the time.
+### API
+Some of data is recived by API calls, such as older messages, conversations or users. This happens on component mount and also when user scrolls through the components. With each scroll new data is recived.
+### Custom hooks
+Since a lot of data in the app is based on calls to API that are limited (calls to one endpoint with limit and offset) and requests are sent whenever scroll reaches bottom line it was need to listen to scroll event inside multiple components. For this purpose I created my own hook that listens to scroll event and whenever scroll reaches bottom or top (that can be chooosen) calls passed function which in this case is API request call. 
+### Redux
+Whole application was split in couple redux slices mainly  for authorization, converstaion, instance (which hold objects such as conversations, active or unactive users) and socket which is responsible for creating socket. Data in store is modified either by components or previously mentioned middleware that listens for socket events.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 4. How to run
+1. Clone repo
+2. Install dependencies
+   ```
+   cd my-app
+   npm install
+   ```
+3. Start development server
+   ```
+   npm start
+   ```
+4. Open http://localhost:3000 to view the app in your browser.
