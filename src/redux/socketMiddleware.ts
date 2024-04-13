@@ -9,22 +9,23 @@ import SocketFactory, { SocketInterface } from "./SocketFactory";
 import {
   confirmMessage,
   emitMessage,
+  readMessages,
   reciveMessage,
+  reciveReadMessages,
   startListeningCofirmationMessage,
   startListeningConversation,
   stopListeningConversation,
 } from "./slices/conversationSlice";
 import {
   createRoom,
-  getUsers,
   joinRoom,
   reciveGlobalMessage,
-  setActiveUsers,
-  setUsers,
   stopListeningUser,
   updateConversation,
+  updateUser,
 } from "./slices/instancesSlice";
 import { IConversation } from "../types/messages";
+import { TUser } from "../types/user";
 
 enum SocketEvent {
   Connect = "connect",
@@ -39,8 +40,10 @@ enum SocketEvent {
   ActiveUsers = "activeUsers",
   Users = "users",
   getUsers = "getUsers",
+  User = "user",
   sendMessage = "sendMessage",
   CreateRoom = "createRoom",
+  ReadMessages = "readMessages",
 }
 
 const socketMiddleware: Middleware = (store) => {
@@ -61,6 +64,7 @@ const socketMiddleware: Middleware = (store) => {
         });
         socket.socket.on(SocketEvent.Message, (message) => {
           store.dispatch(reciveGlobalMessage(message));
+          console.log(message);
         });
         socket.socket.on(
           SocketEvent.JoinRoom,
@@ -73,20 +77,22 @@ const socketMiddleware: Middleware = (store) => {
           console.log("disconnected");
           store.dispatch(connectionLost());
         });
+        socket.socket.on(
+          SocketEvent.ReadMessages,
+          ({
+            conversationId,
+            messageId,
+          }: {
+            conversationId: number;
+            messageId: number;
+          }) => {
+            store.dispatch(reciveReadMessages({ conversationId, messageId }));
+          }
+        );
+        socket.socket.on(SocketEvent.User, (user: TUser) => {
+          store.dispatch(updateUser(user));
+        });
       }
-    }
-
-    if (getUsers.match(action) && socket) {
-      socket.socket.off(SocketEvent.ActiveUsers);
-      socket.socket.on(SocketEvent.ActiveUsers, (message) => {
-        console.log(message);
-        store.dispatch(setActiveUsers(message));
-      });
-      socket.socket.on(SocketEvent.Users, (message) => {
-        console.log(message);
-        store.dispatch(setUsers(message));
-      });
-      setTimeout(() => socket.socket.emit(SocketEvent.getUsers), 100);
     }
 
     if (startListeningConversation.match(action) && socket) {
@@ -125,6 +131,10 @@ const socketMiddleware: Middleware = (store) => {
 
     if (createRoom.match(action) && socket) {
       socket.socket.emit(SocketEvent.CreateRoom, action.payload);
+    }
+
+    if (readMessages.match(action) && socket) {
+      socket.socket.emit(SocketEvent.ReadMessages, action.payload);
     }
 
     next(action);

@@ -1,21 +1,20 @@
 import React, { useState } from "react";
-import "./Register.css";
+import "./AuthStyle/Register.css";
 import axios, { AxiosResponse } from "axios";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { useAppDispatch } from "../redux/hooks";
 import { IAuthData } from "./Auth.types";
 import { login } from "../redux/slices/authSlice";
-import { Box, Button, TextField } from "@mui/material";
+import { Box, TextField } from "@mui/material";
 
 const Register: React.FC = () => {
   const [credentials, setCredentials] = useState({
     name: "",
-    email: "",
     password: "",
+    repeatedPassword: "",
   });
-  const [repeatedPassword, setRepeatedPassword] = useState("");
   const [message, setMessage] = useState("");
   const dispatch = useAppDispatch();
-
+  const [error, setError] = useState("");
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials((prev) => {
       return { ...prev, [e.target.id]: e.target.value };
@@ -32,15 +31,18 @@ const Register: React.FC = () => {
       const { accessToken: token, name, id } = response.data;
       dispatch(login({ token, name, id }));
       localStorage.setItem("token", token);
+      setMessage("Acount created succesfully");
+      setError("");
     } catch (e: any) {
       console.error(e);
-      setMessage(
+      setError(
         e.response?.data.message || "An error occurred during registration."
       );
+      setMessage("");
     }
     setCredentials({
       name: "",
-      email: "",
+      repeatedPassword: "",
       password: "",
     });
   };
@@ -49,7 +51,9 @@ const Register: React.FC = () => {
     <Box className="register-container">
       <form onSubmit={handleSubmit} className="register-form">
         <h2>Register</h2>
-        {message && <h4>{message}</h4>}
+        {message && <h4 className="success">{message}</h4>}
+        {error && <h4>{error}</h4>}
+
         <TextField
           type="text"
           id="name"
@@ -58,11 +62,12 @@ const Register: React.FC = () => {
           variant="outlined"
           value={credentials.name}
           onChange={handleChange}
+          className="register-input"
         />
         <TextField
           error={
-            repeatedPassword.length !== 0 &&
-            repeatedPassword !== credentials.password
+            credentials.repeatedPassword.length !== 0 &&
+            credentials.repeatedPassword !== credentials.password
           }
           type="password"
           id="password"
@@ -70,21 +75,30 @@ const Register: React.FC = () => {
           onChange={handleChange}
           label="Password"
           required
+          className="register-input"
         />
         <TextField
           error={
-            repeatedPassword.length !== 0 &&
-            repeatedPassword !== credentials.password
+            credentials.repeatedPassword.length !== 0 &&
+            credentials.repeatedPassword !== credentials.password
           }
           type="password"
-          id="password"
+          id="repeatedPassword"
           required
-          value={repeatedPassword}
-          onChange={(e) => setRepeatedPassword(e.target.value)}
+          value={credentials.repeatedPassword}
+          onChange={handleChange}
           label="Password"
+          className="register-input"
         />
 
-        <Button type="submit">Register</Button>
+        <button type="submit" className="register-button">
+          Register
+        </button>
+        <a href="/">
+          <button type="button" className="login-button">
+            Login
+          </button>
+        </a>
       </form>
     </Box>
   );

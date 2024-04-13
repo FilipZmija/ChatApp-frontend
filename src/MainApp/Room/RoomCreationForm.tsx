@@ -5,37 +5,24 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import Checkbox from "@mui/material/Checkbox";
-import { Avatar, List, ListItem, ListItemText } from "@mui/material";
 import { TUser } from "../../types/user";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useState } from "react";
+import { useAppDispatch } from "../../redux/hooks";
 import { createRoom } from "../../redux/slices/instancesSlice";
-
+import "./RoomStyle/RoomCreationForm.css";
+import UserCheckList from "./UserCheckList";
+import TwoColumnUserList from "./TwoColumnUserList";
+import IconButton from "@mui/material/IconButton";
+import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 export default function FormDialog() {
-  const { token } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
   });
-  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
-  const [users, setUsers] = useState<TUser[]>([]);
-  console.log(users);
-  useEffect(() => {
-    (async () => {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/user/all`,
-        {
-          headers: {
-            Authorization: `Bearer ` + token,
-          },
-        }
-      );
-      setUsers(response.data.users);
-    })();
-  }, []);
+  const [selectedUsers, setSelectedUsers] = useState<TUser[]>([]);
+  const selectedUserIds = selectedUsers.map((user) => user.id);
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -49,24 +36,30 @@ export default function FormDialog() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleUserToggle = (userId: number) => {
-    if (selectedUsers.includes(userId)) {
-      setSelectedUsers(selectedUsers.filter((id) => id !== userId));
+  const handleUserToggle = (user: TUser) => {
+    if (
+      selectedUsers.findIndex(
+        (selectedUsers) => selectedUsers.id === user.id
+      ) !== -1
+    ) {
+      setSelectedUsers(
+        selectedUsers.filter((selectedUser) => selectedUser.id !== user.id)
+      );
     } else {
-      setSelectedUsers([...selectedUsers, userId]);
+      setSelectedUsers([...selectedUsers, user]);
     }
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log(formData.name, selectedUsers);
-    dispatch(createRoom({ name: formData.name, users: selectedUsers }));
+    dispatch(createRoom({ name: formData.name, users: selectedUserIds }));
   };
-  return users.length > 0 ? (
+  return (
     <>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Open form dialog
-      </Button>
+      <IconButton onClick={handleClickOpen}>
+        <ChatOutlinedIcon />
+      </IconButton>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -75,39 +68,37 @@ export default function FormDialog() {
           onSubmit: handleSubmit,
         }}
       >
-        <DialogTitle>Create Group</DialogTitle>
-        <DialogContent>
+        <DialogTitle className="dialog-title">Create Group</DialogTitle>
+        <DialogContent className="dialog-content">
           <TextField
             autoFocus
             required
             margin="dense"
             id="name"
             name="name"
-            label="Your Name"
+            label="Room name"
             type="text"
             fullWidth
             variant="standard"
             onChange={handleChange}
           />
+          <h3>Selected users</h3>
 
-          <List>
-            {users.map((user) => (
-              <ListItem
-                key={user.id}
-                onClick={() => handleUserToggle(user.id)}
-                sx={{ paddingLeft: "0", paddingRight: "0" }}
-              >
-                <Avatar sx={{ marginRight: "8px" }}>
-                  {user.name.charAt(0).toUpperCase()}
-                </Avatar>
-                <ListItemText primary={user.name} />
-                <Checkbox
-                  checked={selectedUsers.includes(user.id)}
-                  onChange={() => handleUserToggle(user.id)}
-                />
-              </ListItem>
-            ))}
-          </List>
+          {selectedUsers.length > 0 ? (
+            <div className="dialog-users-list-container selected-container">
+              <TwoColumnUserList
+                handleUserToggle={handleUserToggle}
+                selectedUsers={selectedUsers}
+              />
+            </div>
+          ) : (
+            <h5>No selected users</h5>
+          )}
+
+          <UserCheckList
+            handleUserToggle={handleUserToggle}
+            selectedUsers={selectedUsers}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
@@ -115,5 +106,5 @@ export default function FormDialog() {
         </DialogActions>
       </Dialog>
     </>
-  ) : null;
+  );
 }

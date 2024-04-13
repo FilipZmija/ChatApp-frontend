@@ -6,7 +6,7 @@ import axios, { AxiosResponse } from "axios";
 import { IConversationData } from "../types/messages";
 import { setLoading, updateInfo } from "../redux/slices/conversationSlice";
 import ConversationList from "./Users/ConversationList";
-import UserList from "./Users/UserList";
+import UserList from "./Users/UserLists";
 import "./MainAppStyle/MainView.css";
 export default function MainView() {
   const dispatch = useAppDispatch();
@@ -44,8 +44,6 @@ export default function MainView() {
           <Conversation />
         </div>
         <div className="user-list">
-          {/* <UserSearchBar /> */}
-          {/* <RoomCreationForm /> */}
           <UserList />
         </div>
       </div>
