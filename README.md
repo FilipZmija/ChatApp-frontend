@@ -33,9 +33,13 @@ Whole application was split in couple redux slices mainly  for authorization, co
 
 ## 4. How to run
 1. Clone repo
+      ```
+         git clone https://github.com/FilipZmija/ChatApp-frontend.git 
+      ```
+      
 2. Install dependencies
    ```
-   cd my-app
+   cd ChatApp-frontend
    npm install
    ```
 3. Start development server
