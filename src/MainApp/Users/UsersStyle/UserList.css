@@ -6,3 +6,10 @@
 .users-list-container {
   overflow: auto;
 }
+
+.search-create-container {
+  display: inline-flex;
+  flex-direction: row;
+  margin-bottom: 0;
+  align-items: flex-end;
+}

@@ -1,13 +1,16 @@
 .user-list-item-container {
+  display: inline-flex;
   flex-direction: row;
   align-items: center;
+  width: 100%;
 }
 
-.user-list-item-container > .avatar {
+.user-list-item-container > .avatar-container > .avatar {
   width: 3rem;
   height: 3rem;
   font-size: 1.75rem;
   margin-bottom: 0.6rem;
+  overflow: visible;
 }
 
 .user-list-item-container > .user-list-item-info {
@@ -25,7 +28,7 @@
   }
 }
 
-a.users-loadmore-button {
+span.users-loadmore-button {
   margin: 1rem 7.5rem 0 7.5rem;
   text-decoration: text-decoration-line;
   display: flex;
@@ -38,10 +41,10 @@ a.users-loadmore-button {
   cursor: pointer;
 }
 
-a.users-loadmore-button:hover {
+span.users-loadmore-button:hover {
   background-color: #efefef;
 }
 
-a.users-loadmore-button:active {
+span.users-loadmore-button:active {
   background-color: #d9d9d9;
 }

@@ -2,7 +2,7 @@ import { RefObject, useCallback, useLayoutEffect, useState } from "react";
 
 export const useScrollBottom = (
   element: RefObject<HTMLDivElement>,
-  getData: () => Promise<void>,
+  getData: () => Promise<void> | void,
   conditions: boolean
 ) => {
   const [distanceBottom, setDistanceBottom] = useState(0);
@@ -20,7 +20,6 @@ export const useScrollBottom = (
       }
     }
   }, [distanceBottom, getData, setDistanceBottom]);
-
   useLayoutEffect(() => {
     if (ref) {
       ref.addEventListener("scroll", scrollListener);

@@ -3,12 +3,13 @@
   flex-direction: row;
 }
 
-.conversation-list-item-container > div > div > .avatar {
-  background-color: green;
+div > .conversation-avatar {
+  background-color: rgb(152, 189, 152);
   width: 3.5rem;
   height: 3.5rem;
   margin-right: 0.5rem;
   font-size: 1.75rem;
+  overflow: visible;
 }
 
 .message-unread {

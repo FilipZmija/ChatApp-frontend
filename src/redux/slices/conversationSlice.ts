@@ -19,8 +19,6 @@ const readMessagesHelper = (
     if (state.conversation.messages) {
       state.conversation.messages = state.conversation.messages.map(
         (message) => {
-          console.log(messageId, message.id);
-
           if (
             (reader
               ? message.userId === state.recipient.id
@@ -43,6 +41,7 @@ const initialState: IConversationData = {
     childId: 0,
     messages: [],
     type: "user",
+    users: [],
   },
   recipient: { name: "", id: 0, type: "user" },
   loading: false,
@@ -66,6 +65,7 @@ const conversationSlice = createSlice({
         childId: 0,
         messages: [],
         type: "user",
+        users: [],
       };
     },
     updateInfo: (state, action: PayloadAction<IConversationData>) => {
@@ -75,11 +75,29 @@ const conversationSlice = createSlice({
         state.conversation = initialState.conversation;
       }
       state.recipient = action.payload.recipient;
+      if (state.recipient.type === "room") {
+        state.recipient.active =
+          state.recipient.type === "room" &&
+          state.conversation.users.findIndex((user) => user.active) !== -1;
+        state.recipient.lastActive =
+          state.recipient.type === "room"
+            ? state.conversation.users.reduce((acc, curr) => {
+                if (curr.lastActive && acc.lastActive) {
+                  if (curr.lastActive > acc.lastActive) {
+                    return curr;
+                  } else return acc;
+                } else if (acc.lastActive) {
+                  return acc;
+                } else {
+                  return curr;
+                }
+              }).lastActive
+            : undefined;
+      }
       state.loading = false;
     },
     emitMessage: (state, action: PayloadAction<IMessageToSocket>) => {
       if (state.conversation?.messages) {
-        console.log(action.payload);
         state.conversation.messages.push(action.payload.message);
       }
     },
@@ -107,12 +125,12 @@ const conversationSlice = createSlice({
           (item) =>
             item.createdAt === messageCreatedAt && item.content === content
         );
-        console.log(index);
-        if (index !== -1)
+        if (index !== -1) {
           state.conversation.messages[index].status =
             action.payload.message.message.status;
-        state.conversation.messages[index].id =
-          action.payload.message.message.id;
+          state.conversation.messages[index].id =
+            action.payload.message.message.id;
+        }
       }
     },
     startListeningConversation: (
@@ -154,6 +172,7 @@ const conversationSlice = createSlice({
         childId: 0,
         messages: [],
         type: "user",
+        users: [],
       };
       state.recipient = { name: "", id: -1, type: "user" };
     },

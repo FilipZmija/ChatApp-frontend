@@ -19,25 +19,50 @@ import {
 } from "../../redux/slices/conversationSlice";
 import { readLastMessage } from "../../redux/slices/instancesSlice";
 
-const renderStyles = (messages: { userId: number }[], index: number) => {
-  if (messages[index]?.userId !== messages[index - 1]?.userId) {
-    if (messages[index].userId === messages[index + 1]?.userId) return "first";
+const renderStyles = (
+  messages: { userId: number; createdAt: string }[],
+  index: number
+) => {
+  const timeDifference =
+    index !== 0
+      ? new Date(messages[index].createdAt).getTime() -
+        new Date(messages[index - 1]?.createdAt).getTime()
+      : 2000000;
+
+  const timeDifferenceForward = messages[index + 1]
+    ? new Date(messages[index + 1].createdAt).getTime() -
+      new Date(messages[index]?.createdAt).getTime()
+    : 2000000;
+
+  if (
+    messages[index]?.userId !== messages[index - 1]?.userId ||
+    timeDifference > 600000
+  ) {
+    if (
+      messages[index].userId === messages[index + 1]?.userId &&
+      timeDifferenceForward < 600000
+    )
+      return "first";
     else return "single";
   } else if (messages[index]?.userId !== messages[index + 1]?.userId) {
     return "last"; // Apply styles for the last element
   }
+  if (timeDifferenceForward > 600000) return "last";
   return "middle"; // Return empty object if neither first nor last element
 };
 
 const messageIndicators = (amount: number, id: number) => {
-  const messages: {
-    userId: number;
-    message: { id: number; content: string; status: string };
-  }[] = [];
+  const messages: ISingleMessage[] = [];
+
   for (let i = 0; i < amount; i++) {
     messages.push({
+      id: i,
       userId: Math.random() > 0.5 ? id : 0,
-      message: { id: i, content: "", status: "sent" },
+      content: "",
+      status: "sent",
+      user: { name: "", type: "user", id: 0 },
+      createdAt: new Date().getTime().toString(),
+      type: "message",
     });
   }
   return messages;
@@ -67,7 +92,7 @@ export default function MessagesList({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const lastMessageId = messages?.at(-1)?.id;
   const [distanceTop, setDistanceTop] = useState(0);
-
+  const [noMoreData, setNoMoreData] = useState(false);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -105,9 +130,12 @@ export default function MessagesList({
           params,
         }
       );
-      console.log(response.data.messages);
-      dispatch(loadMoreMessages(response.data.messages));
-      setPage(page + 1);
+      if (response.data.messages.length === 0) {
+        setNoMoreData(true);
+      } else {
+        dispatch(loadMoreMessages(response.data.messages));
+        setPage(page + 1);
+      }
       setLoadingNewMessages(false);
     } catch (e) {
       console.log(e);
@@ -120,7 +148,7 @@ export default function MessagesList({
       if (!distanceTop) {
         setDistanceTop(Math.round(messagesListRef.current.clientHeight * 0.1));
       }
-      if (top < distanceTop && !loadingNewMessages) {
+      if (top < distanceTop && !loadingNewMessages && !noMoreData) {
         const prevScrollHeight = messagesListRef.current.scrollHeight;
         await getMessages();
         const newScrollHeight = messagesListRef.current.scrollHeight;
@@ -128,7 +156,7 @@ export default function MessagesList({
         messagesListRef.current.scrollTop += scrollHeightDifference;
       }
     }
-  }, [distanceTop, loadingNewMessages, getMessages]);
+  }, [distanceTop, loadingNewMessages, getMessages, noMoreData]);
 
   useLayoutEffect(() => {
     if (messages) {
@@ -141,6 +169,7 @@ export default function MessagesList({
       }
     }
   }, [messages, scrollListenerTop]);
+
   useLayoutEffect(() => {
     messagesEndRef.current?.scrollIntoView();
   }, [id]);
@@ -161,7 +190,7 @@ export default function MessagesList({
       setShouldScrollToBottom(false);
     }
   };
-
+  console.log(messages);
   return (
     <>
       {id !== 0 ? (
@@ -186,9 +215,15 @@ export default function MessagesList({
                           ? "me"
                           : recipient.name
                       }
+                      timeDifferenceBack={
+                        index !== 0
+                          ? new Date(messages[index].createdAt).getTime() -
+                            new Date(messages[index - 1]?.createdAt).getTime()
+                          : 2000000
+                      }
                     />
                   );
-                else
+                else {
                   return (
                     <Message
                       message={messages[index]}
@@ -197,8 +232,15 @@ export default function MessagesList({
                         messages[index].userId === myId ? "me" : recipient.name
                       }
                       nextMessageSender={null}
+                      timeDifferenceBack={
+                        index !== 0
+                          ? new Date(messages[index].createdAt).getTime() -
+                            new Date(messages[index - 1]?.createdAt).getTime()
+                          : 2000000
+                      }
                     />
                   );
+                }
               })}
               <div ref={messagesEndRef} />
             </div>
@@ -208,7 +250,7 @@ export default function MessagesList({
                 messageIndicators(21, myId).map((item, index, messages) => {
                   return (
                     <Message
-                      message={messages[index].message}
+                      message={messages[index]}
                       type={renderStyles(messages, index)}
                       messageSender={
                         messages[index].userId === myId ? "me" : "guest"
@@ -216,6 +258,7 @@ export default function MessagesList({
                       nextMessageSender={
                         messages[index].userId === myId ? "me" : "guest"
                       }
+                      timeDifferenceBack={0}
                     />
                   );
                 })

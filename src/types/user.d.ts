@@ -3,5 +3,5 @@ export type TUser = {
   id: number;
   type: "user";
   active?: boolean;
-  lastActive?: Date;
+  lastActive?: string;
 };

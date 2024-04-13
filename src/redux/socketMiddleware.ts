@@ -18,16 +18,14 @@ import {
 } from "./slices/conversationSlice";
 import {
   createRoom,
-  getUsers,
   joinRoom,
   reciveGlobalMessage,
-  setActiveUsers,
-  setUsers,
   stopListeningUser,
   updateConversation,
   updateUser,
 } from "./slices/instancesSlice";
 import { IConversation } from "../types/messages";
+import { TUser } from "../types/user";
 
 enum SocketEvent {
   Connect = "connect",
@@ -66,6 +64,7 @@ const socketMiddleware: Middleware = (store) => {
         });
         socket.socket.on(SocketEvent.Message, (message) => {
           store.dispatch(reciveGlobalMessage(message));
+          console.log(message);
         });
         socket.socket.on(
           SocketEvent.JoinRoom,
@@ -87,31 +86,13 @@ const socketMiddleware: Middleware = (store) => {
             conversationId: number;
             messageId: number;
           }) => {
-            console.log("witam potwierdzam");
-
             store.dispatch(reciveReadMessages({ conversationId, messageId }));
           }
         );
+        socket.socket.on(SocketEvent.User, (user: TUser) => {
+          store.dispatch(updateUser(user));
+        });
       }
-    }
-
-    if (getUsers.match(action) && socket) {
-      socket.socket.off(SocketEvent.ActiveUsers);
-      socket.socket.off(SocketEvent.Users);
-      socket.socket.off(SocketEvent.User);
-
-      socket.socket.on(SocketEvent.ActiveUsers, (message) => {
-        console.log(message);
-        store.dispatch(setActiveUsers(message));
-      });
-      socket.socket.on(SocketEvent.Users, (message) => {
-        console.log(message);
-        store.dispatch(setUsers(message));
-      });
-      socket.socket.on(SocketEvent.User, (message) => {
-        store.dispatch(updateUser(message));
-      });
-      setTimeout(() => socket.socket.emit(SocketEvent.getUsers), 100);
     }
 
     if (startListeningConversation.match(action) && socket) {

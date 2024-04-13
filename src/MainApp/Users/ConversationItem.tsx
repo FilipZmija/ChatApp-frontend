@@ -4,15 +4,16 @@ import {
   ListItemButton,
   ListItemText,
 } from "@mui/material";
-import { IConversation } from "../../types/messages";
+import { IConversationCard } from "../../types/messages";
 import { selectUser } from "../../redux/slices/instancesSlice";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "../../redux/hooks";
 import "./UsersStyle/ConversationItem.css";
+import CustomAvatar from "./CustomAvatar";
 export default function ConversationItem({
   conversation,
 }: {
-  conversation: IConversation;
+  conversation: IConversationCard;
 }) {
   const dispatch = useDispatch();
   const selectedUser = useAppSelector((state) => state.instance.selection);
@@ -34,13 +35,23 @@ export default function ConversationItem({
             })
           )
         }
-        selected={selectedUser.id === conversation.childId}
+        selected={
+          selectedUser.type === conversation.type &&
+          selectedUser.id === +conversation.childId
+        }
         divider
       >
         <ListItemAvatar>
-          <Avatar className="avatar">
-            {conversation.name?.charAt(0).toUpperCase() || "R"}
-          </Avatar>
+          {conversation.recipient ? (
+            <CustomAvatar
+              className="conversation-avatar"
+              coversationData={conversation.recipient}
+            />
+          ) : (
+            <Avatar className="conversation-avatar">
+              {conversation.name?.charAt(0).toUpperCase() || "R"}
+            </Avatar>
+          )}
         </ListItemAvatar>
         <ListItemText
           primary={
