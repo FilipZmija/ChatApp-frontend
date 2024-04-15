@@ -28,10 +28,7 @@ export default function Message({
       new Date(message.createdAt).getDate() === new Date().getDate() - 1;
     const isLessThenWeekOld =
       new Date(message.createdAt).getDate() >= new Date().getDate() - 7;
-    console.log(
-      new Date(message.createdAt).getDate(),
-      new Date().getDate() - 7
-    );
+
     const day = new Date(message.createdAt).getDay();
     const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     if (isYesterday)

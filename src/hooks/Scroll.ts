@@ -19,7 +19,8 @@ export const useScrollBottom = (
         await getData();
       }
     }
-  }, [distanceBottom, getData, setDistanceBottom]);
+  }, [distanceBottom, getData, setDistanceBottom, conditions, ref]);
+
   useLayoutEffect(() => {
     if (ref) {
       ref.addEventListener("scroll", scrollListener);
@@ -27,5 +28,5 @@ export const useScrollBottom = (
         ref.removeEventListener("scroll", scrollListener);
       };
     }
-  }, [scrollListener]);
+  }, [scrollListener, ref]);
 };

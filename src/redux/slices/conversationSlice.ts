@@ -18,7 +18,7 @@ const readMessagesHelper = (
   if (state.conversation.id === conversationId) {
     if (state.conversation.messages) {
       state.conversation.messages = state.conversation.messages.map(
-        (message) => {
+        (message, index) => {
           if (
             (reader
               ? message.userId === state.recipient.id
