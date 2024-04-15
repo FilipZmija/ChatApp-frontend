@@ -120,7 +120,7 @@ export default function MessagesList({
       setLoadingNewMessages(true);
       const params = new URLSearchParams();
       params.append("page", page.toString());
-      console.log(page);
+
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}/messages/${conversationId}`,
         {
@@ -190,7 +190,7 @@ export default function MessagesList({
       setShouldScrollToBottom(false);
     }
   };
-  console.log(messages);
+
   return (
     <>
       {id !== 0 ? (

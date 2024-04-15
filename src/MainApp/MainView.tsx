@@ -13,8 +13,8 @@ export default function MainView() {
   const { selection } = useAppSelector((state) => state.instance);
   const token = useAppSelector((state) => state.auth.token);
   useEffect(() => {
-    dispatch(initSocket());
-  }, [dispatch]);
+    dispatch(initSocket(token));
+  }, [dispatch, token]);
 
   useEffect(() => {
     selection.id !== -1 &&
@@ -29,7 +29,7 @@ export default function MainView() {
           }
         );
         response.data.recipient.type = selection.type;
-        console.log(response);
+
         dispatch(updateInfo(response.data));
       })();
   }, [selection, dispatch, token]);

@@ -27,5 +27,11 @@ class SocketFactory {
     return socketConnection;
   }
 }
+export const closeSocketConnection = () => {
+  if (socketConnection) {
+    socketConnection.socket.close();
+    socketConnection = undefined;
+  }
+};
 
 export default SocketFactory;

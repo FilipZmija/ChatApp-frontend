@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export interface SocketState {
   isConnected: boolean;
@@ -12,7 +12,7 @@ const socketSlice = createSlice({
   name: "socket",
   initialState,
   reducers: {
-    initSocket: () => {
+    initSocket: (_, action: PayloadAction<string | null>) => {
       return;
     },
     connectionEstablished: (state) => {
