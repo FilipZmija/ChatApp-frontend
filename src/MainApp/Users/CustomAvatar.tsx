@@ -31,7 +31,6 @@ const CustomAvatar: React.FC<Props> = ({
 
   useEffect(() => {
     setTimeActive(getAvatarContent(coversationData));
-    console.log(coversationData);
 
     const interval = setInterval(() => {
       setTimeActive(getAvatarContent(coversationData));

@@ -5,7 +5,10 @@ import {
   initSocket,
   connectionLost,
 } from "./slices/socketSlice";
-import SocketFactory, { SocketInterface } from "./SocketFactory";
+import SocketFactory, {
+  SocketInterface,
+  closeSocketConnection,
+} from "./SocketFactory";
 import {
   confirmMessage,
   emitMessage,
@@ -26,6 +29,7 @@ import {
 } from "./slices/instancesSlice";
 import { IConversation } from "../types/messages";
 import { TUser } from "../types/user";
+import { logout } from "./slices/authSlice";
 
 enum SocketEvent {
   Connect = "connect",
@@ -47,51 +51,52 @@ enum SocketEvent {
 }
 
 const socketMiddleware: Middleware = (store) => {
-  let socket: SocketInterface;
+  let socket: SocketInterface | null;
   return (next) => (action) => {
     if (initSocket.match(action)) {
       if (!socket) {
         const token: string = store.getState().auth.token;
         socket = SocketFactory.create(token);
-        socket.socket.connect();
+        if (socket) {
+          socket.socket.connect();
 
-        socket.socket.on(SocketEvent.Connect, () => {
-          console.log("connected");
-          store.dispatch(connectionEstablished());
-        });
-        socket.socket.on(SocketEvent.Error, (message) => {
-          console.error(message);
-        });
-        socket.socket.on(SocketEvent.Message, (message) => {
-          store.dispatch(reciveGlobalMessage(message));
-          console.log(message);
-        });
-        socket.socket.on(
-          SocketEvent.JoinRoom,
-          (conversation: IConversation) => {
-            store.dispatch(joinRoom(conversation));
-            socket.socket.emit("joinRoom", conversation.childId);
-          }
-        );
-        socket.socket.on(SocketEvent.Disconnect, (reason) => {
-          console.log("disconnected");
-          store.dispatch(connectionLost());
-        });
-        socket.socket.on(
-          SocketEvent.ReadMessages,
-          ({
-            conversationId,
-            messageId,
-          }: {
-            conversationId: number;
-            messageId: number;
-          }) => {
-            store.dispatch(reciveReadMessages({ conversationId, messageId }));
-          }
-        );
-        socket.socket.on(SocketEvent.User, (user: TUser) => {
-          store.dispatch(updateUser(user));
-        });
+          socket.socket.on(SocketEvent.Connect, () => {
+            console.log("connected");
+            store.dispatch(connectionEstablished());
+          });
+          socket.socket.on(SocketEvent.Error, (message) => {
+            console.error(message);
+          });
+          socket.socket.on(SocketEvent.Message, (message) => {
+            store.dispatch(reciveGlobalMessage(message));
+          });
+          socket.socket.on(
+            SocketEvent.JoinRoom,
+            (conversation: IConversation) => {
+              store.dispatch(joinRoom(conversation));
+              if (socket) socket.socket.emit("joinRoom", conversation.childId);
+            }
+          );
+          socket.socket.on(SocketEvent.Disconnect, (reason) => {
+            console.log("disconnected: ", reason);
+            store.dispatch(connectionLost());
+          });
+          socket.socket.on(
+            SocketEvent.ReadMessages,
+            ({
+              conversationId,
+              messageId,
+            }: {
+              conversationId: number;
+              messageId: number;
+            }) => {
+              store.dispatch(reciveReadMessages({ conversationId, messageId }));
+            }
+          );
+          socket.socket.on(SocketEvent.User, (user: TUser) => {
+            store.dispatch(updateUser(user));
+          });
+        }
       }
     }
 
@@ -136,7 +141,12 @@ const socketMiddleware: Middleware = (store) => {
     if (readMessages.match(action) && socket) {
       socket.socket.emit(SocketEvent.ReadMessages, action.payload);
     }
-
+    if (logout.match(action) && socket) {
+      socket.socket.disconnect();
+      socket = null;
+      closeSocketConnection();
+      store.dispatch(connectionLost());
+    }
     next(action);
   };
 };

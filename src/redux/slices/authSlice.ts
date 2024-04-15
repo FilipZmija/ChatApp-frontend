@@ -20,6 +20,7 @@ const authSlice = createSlice({
       state.name = action.payload.name;
       state.token = action.payload.token;
       state.id = action.payload.id;
+      console.log(action.payload);
     },
     logout: (state) => {
       state.name = "";
