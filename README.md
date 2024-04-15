@@ -47,3 +47,4 @@ Whole application was split in couple redux slices mainly  for authorization, co
    npm start
    ```
 4. Open http://localhost:3000 to view the app in your browser.
+ 
