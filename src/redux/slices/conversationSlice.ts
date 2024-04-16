@@ -139,10 +139,16 @@ const conversationSlice = createSlice({
     ) => {
       return;
     },
-    startListeningCofirmationMessage: (state, action) => {
+    startListeningCofirmationMessage: (
+      state,
+      action: PayloadAction<TUser | TRoom>
+    ) => {
       return;
     },
-    stopListeningConversation: (state, action) => {
+    stopListeningConversation: (
+      state,
+      action: PayloadAction<TUser | TRoom>
+    ) => {
       return;
     },
 

@@ -10,7 +10,6 @@ export const useScrollBottom = (
   const scrollListener = useCallback(async () => {
     if (ref) {
       let bottom = ref.scrollHeight - ref.clientHeight;
-      console.log(ref.scrollTop > bottom - distanceBottom, conditions);
 
       if (!distanceBottom) {
         setDistanceBottom(Math.round(bottom * 0.1));

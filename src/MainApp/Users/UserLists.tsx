@@ -9,9 +9,14 @@ import {
 } from "../../redux/slices/instancesSlice";
 import "./UsersStyle/UserList.css";
 import SearchBar from "./SearchBar";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { useScrollBottom } from "../../hooks/Scroll";
 import UserList from "./UserList";
+import { TUser } from "../../types/user";
+
+interface IUsersResponse {
+  [key: string]: TUser[];
+}
 
 export default function UserLists() {
   const { users, activeUsers, searchedUsers } = useAppSelector(
@@ -33,7 +38,7 @@ export default function UserLists() {
       try {
         const params = new URLSearchParams();
         params.append("page", activeUsersPage.toString());
-        const response = await axios.get(
+        const response: AxiosResponse<IUsersResponse> = await axios.get(
           `${process.env.REACT_APP_API_URL}/user/all/active`,
           {
             headers: {
@@ -61,7 +66,7 @@ export default function UserLists() {
       try {
         const params = new URLSearchParams();
         params.append("page", usersPage.toString());
-        const response = await axios.get(
+        const response: AxiosResponse<IUsersResponse> = await axios.get(
           `${process.env.REACT_APP_API_URL}/user/all/unactive`,
           {
             headers: {
@@ -96,7 +101,7 @@ export default function UserLists() {
           const params = new URLSearchParams();
           params.append("name", username);
           setLoadingUsers(true);
-          const response = await axios.get(
+          const response: AxiosResponse<IUsersResponse> = await axios.get(
             `${process.env.REACT_APP_API_URL}/user/search`,
             {
               headers: {
@@ -122,7 +127,7 @@ export default function UserLists() {
       params.append("name", username);
       params.append("page", page.toString());
       setLoadingUsers(true);
-      const response = await axios.get(
+      const response: AxiosResponse<IUsersResponse> = await axios.get(
         `${process.env.REACT_APP_API_URL}/user/search`,
         {
           headers: {

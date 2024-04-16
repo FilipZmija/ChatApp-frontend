@@ -1,10 +1,13 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Login from "./Auth/Login";
 import { useAppDispatch, useAppSelector } from "./redux/hooks";
 import MainView from "./MainApp/MainView";
 import axios, { AxiosResponse } from "axios";
 import { IAuthData } from "./Auth/Auth.types";
 import { login } from "./redux/slices/authSlice";
+interface IAuthResponse {
+  user: IAuthData;
+}
 
 export default function App() {
   const accessToken = useAppSelector((state) => state.auth.token);
@@ -16,7 +19,7 @@ export default function App() {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response: AxiosResponse<{ user: IAuthData }> = await axios.get(
+          const response: AxiosResponse<IAuthResponse> = await axios.get(
             `${process.env.REACT_APP_API_URL}/user/data`,
             {
               headers: {

@@ -8,7 +8,8 @@ export interface SocketInterface {
 class SocketConnection implements SocketInterface {
   public socket: Socket;
   constructor(token: string) {
-    this.socket = io(`${process.env.REACT_APP_API_URL}`, {
+    this.socket = io(`${process.env.REACT_APP_WS_URL}`, {
+      path: "/ws",
       reconnectionDelayMax: 10000,
       autoConnect: false,
       auth: {

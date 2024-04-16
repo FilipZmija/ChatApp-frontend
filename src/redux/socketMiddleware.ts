@@ -49,6 +49,10 @@ enum SocketEvent {
   CreateRoom = "createRoom",
   ReadMessages = "readMessages",
 }
+interface IReadMessagesEvent {
+  conversationId: number;
+  messageId: number;
+}
 
 const socketMiddleware: Middleware = (store) => {
   let socket: SocketInterface | null;
@@ -61,7 +65,6 @@ const socketMiddleware: Middleware = (store) => {
           socket.socket.connect();
 
           socket.socket.on(SocketEvent.Connect, () => {
-            console.log("connected");
             store.dispatch(connectionEstablished());
           });
           socket.socket.on(SocketEvent.Error, (message) => {
@@ -83,13 +86,7 @@ const socketMiddleware: Middleware = (store) => {
           });
           socket.socket.on(
             SocketEvent.ReadMessages,
-            ({
-              conversationId,
-              messageId,
-            }: {
-              conversationId: number;
-              messageId: number;
-            }) => {
+            ({ conversationId, messageId }: IReadMessagesEvent) => {
               store.dispatch(reciveReadMessages({ conversationId, messageId }));
             }
           );
@@ -103,9 +100,7 @@ const socketMiddleware: Middleware = (store) => {
     if (startListeningConversation.match(action) && socket) {
       const { id, type } = action.payload;
       socket.socket.off(type + "" + id);
-      console.log(type + "" + id);
       socket.socket.on(type + "" + id, (message) => {
-        console.log(message);
         store.dispatch(reciveMessage(message.message));
       });
     }
@@ -126,7 +121,6 @@ const socketMiddleware: Middleware = (store) => {
     }
 
     if (stopListeningUser.match(action) && socket) {
-      console.log(SocketEvent.getUsers);
       socket.socket.off(SocketEvent.ActiveUsers);
     }
 
