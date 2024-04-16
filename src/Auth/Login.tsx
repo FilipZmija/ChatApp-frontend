@@ -6,16 +6,6 @@ import { IAuthData } from "./Auth.types";
 import { login } from "../redux/slices/authSlice";
 import { Box, TextField } from "@mui/material";
 
-// const generateRandomLoginData = (amount: number) => {
-//   const data: { name: string; password: string }[] = [];
-//   for (let i = 1; i <= amount; i++) {
-//     data.push({ name: `test${i}`, password: `test${i}` });
-//   }
-//   return data;
-// };
-
-// // const randomLoginData = generateRandomLoginData(2);
-
 const Login: React.FC = () => {
   const [credentials, setCredentials] = useState({
     name: "",

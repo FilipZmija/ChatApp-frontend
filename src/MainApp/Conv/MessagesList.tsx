@@ -12,12 +12,15 @@ import LandingInfo from "./LandingInfo";
 import "./ConvStyle/MessagesList.css";
 import { TUser } from "../../types/user";
 import { TRoom } from "../../types/room";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import {
   loadMoreMessages,
   readMessages,
 } from "../../redux/slices/conversationSlice";
 import { readLastMessage } from "../../redux/slices/instancesSlice";
+interface IMessagesResponse {
+  messages: ISingleMessage[];
+}
 
 const renderStyles = (
   messages: { userId: number; createdAt: string }[],
@@ -121,7 +124,7 @@ export default function MessagesList({
       const params = new URLSearchParams();
       params.append("page", page.toString());
 
-      const response = await axios.get(
+      const response: AxiosResponse<IMessagesResponse> = await axios.get(
         `${process.env.REACT_APP_API_URL}/messages/${conversationId}`,
         {
           headers: {

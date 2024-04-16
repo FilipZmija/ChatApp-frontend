@@ -2,10 +2,13 @@ import { TextField } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { TUser } from "../../types/user";
 import { useScrollBottom } from "../../hooks/Scroll";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { useAppSelector } from "../../redux/hooks";
 import TwoColumnUserList from "./TwoColumnUserList";
 
+interface IUsersResponse {
+  users: TUser[];
+}
 export default function UserCheckList({
   handleUserToggle,
   selectedUsers,
@@ -24,7 +27,7 @@ export default function UserCheckList({
       setPage(1);
       const params = new URLSearchParams();
       params.append("name", username);
-      const response = await axios.get(
+      const response: AxiosResponse<IUsersResponse> = await axios.get(
         `${process.env.REACT_APP_API_URL}/user/search`,
         {
           headers: {
@@ -42,7 +45,7 @@ export default function UserCheckList({
     params.append("page", page.toString());
     params.append("username", username);
     setLoading(true);
-    const response = await axios.get(
+    const response: AxiosResponse<IUsersResponse> = await axios.get(
       `${process.env.REACT_APP_API_URL}/user/all`,
       {
         headers: {
