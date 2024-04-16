@@ -52,7 +52,6 @@ export default function FormDialog() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(formData.name, selectedUsers);
     dispatch(createRoom({ name: formData.name, users: selectedUserIds }));
   };
   return (
