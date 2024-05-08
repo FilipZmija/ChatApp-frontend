@@ -93,6 +93,12 @@ export default function Message({
           >
             {message.content ? (
               message.content
+            ) : message.status === "typing" ? (
+              <div className="typing">
+                <div className="typing__dot"></div>
+                <div className="typing__dot"></div>
+                <div className="typing__dot"></div>
+              </div>
             ) : (
               <Skeleton variant="text" width={150} />
             )}

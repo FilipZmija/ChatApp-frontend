@@ -42,6 +42,7 @@ const initialState: IConversationData = {
     messages: [],
     type: "user",
     users: [],
+    typing: [],
   },
   recipient: { name: "", id: 0, type: "user" },
   loading: false,
@@ -66,12 +67,13 @@ const conversationSlice = createSlice({
         messages: [],
         type: "user",
         users: [],
+        typing: [],
       };
     },
     updateInfo: (state, action: PayloadAction<IConversationData>) => {
-      if (action.payload.conversation)
+      if (action.payload.conversation) {
         state.conversation = action.payload.conversation;
-      else {
+      } else {
         state.conversation = initialState.conversation;
       }
       state.recipient = action.payload.recipient;
@@ -179,6 +181,7 @@ const conversationSlice = createSlice({
         messages: [],
         type: "user",
         users: [],
+        typing: [],
       };
       state.recipient = { name: "", id: -1, type: "user" };
     },
@@ -191,6 +194,36 @@ const conversationSlice = createSlice({
         return;
       }
       state.conversation.messages = action.payload;
+    },
+    setUserTypingConversation: (
+      state,
+      action: PayloadAction<{ user: TUser; id: number }>
+    ) => {
+      const { user, id } = action.payload;
+      if (state.conversation.childId === id)
+        state.conversation.typing.push(user);
+    },
+    setUserStopTypingConversation: (
+      state,
+      action: PayloadAction<{ user: TUser; id: number }>
+    ) => {
+      const { user, id } = action.payload;
+      if (state.conversation.childId === id)
+        state.conversation.typing = state.conversation.typing.filter(
+          (typingUser) => typingUser.id !== user.id
+        );
+    },
+    startTyping: (
+      action,
+      payload: PayloadAction<{ type: "room" | "user"; id: number }>
+    ) => {
+      return;
+    },
+    stopTyping: (
+      action,
+      payload: PayloadAction<{ type: "room" | "user"; id: number }>
+    ) => {
+      return;
     },
   },
 });
@@ -209,5 +242,9 @@ export const {
   loadMoreMessages,
   readMessages,
   reciveReadMessages,
+  startTyping,
+  stopTyping,
+  setUserTypingConversation,
+  setUserStopTypingConversation,
 } = conversationSlice.actions;
 export default conversationSlice.reducer;

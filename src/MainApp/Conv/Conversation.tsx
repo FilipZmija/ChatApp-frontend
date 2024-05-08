@@ -33,6 +33,7 @@ const Conversation = () => {
     <div className="conversation-container">
       <Badge recipient={recipient} />
       <MessagesList
+        typing={conversation.typing}
         messages={conversationSuperData.conversation.messages}
         key={"Converastion" + conversation.id}
         id={recipient.id}
