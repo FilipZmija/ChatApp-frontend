@@ -22,9 +22,11 @@ export default function UserCheckList({
   const [page, setPage] = useState(1);
   const [users, setUsers] = useState<TUser[]>([]);
   const [username, setUsername] = useState("");
+  const [noMoreData, setNoMoreData] = useState(false);
   useEffect(() => {
     (async () => {
       setPage(1);
+      setNoMoreData(false);
       const params = new URLSearchParams();
       params.append("name", username);
       const response: AxiosResponse<IUsersResponse> = await axios.get(
@@ -43,10 +45,10 @@ export default function UserCheckList({
   const fetchMoreUsers = async () => {
     const params = new URLSearchParams();
     params.append("page", page.toString());
-    params.append("username", username);
+    params.append("name", username);
     setLoading(true);
     const response: AxiosResponse<IUsersResponse> = await axios.get(
-      `${process.env.REACT_APP_API_URL}/user/all`,
+      `${process.env.REACT_APP_API_URL}/user/search`,
       {
         headers: {
           Authorization: `Bearer ` + token,
@@ -54,15 +56,16 @@ export default function UserCheckList({
         params,
       }
     );
-    response.data.users.length > 0 &&
-      setUsers(
-        page === 1 ? response.data.users : [...users, ...response.data.users]
-      );
+    response.data.users.length > 0
+      ? setUsers(
+          page === 1 ? response.data.users : [...users, ...response.data.users]
+        )
+      : setNoMoreData(true);
     setPage(page + 1);
     setLoading(false);
   };
 
-  useScrollBottom(listRef, fetchMoreUsers, !loading);
+  useScrollBottom(listRef, fetchMoreUsers, !loading && !noMoreData);
   return (
     <>
       <TextField

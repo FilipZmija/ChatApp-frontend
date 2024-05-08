@@ -15,14 +15,20 @@ import {
   readMessages,
   reciveMessage,
   reciveReadMessages,
+  setUserStopTypingConversation,
+  setUserTypingConversation,
   startListeningCofirmationMessage,
   startListeningConversation,
+  startTyping,
   stopListeningConversation,
+  stopTyping,
 } from "./slices/conversationSlice";
 import {
   createRoom,
   joinRoom,
   reciveGlobalMessage,
+  setUserStopTyping,
+  setUserTyping,
   stopListeningUser,
   updateConversation,
   updateUser,
@@ -48,6 +54,8 @@ enum SocketEvent {
   sendMessage = "sendMessage",
   CreateRoom = "createRoom",
   ReadMessages = "readMessages",
+  UserTyping = "userTyping",
+  UserStopTyping = "userStopTyping",
 }
 interface IReadMessagesEvent {
   conversationId: number;
@@ -93,15 +101,41 @@ const socketMiddleware: Middleware = (store) => {
           socket.socket.on(SocketEvent.User, (user: TUser) => {
             store.dispatch(updateUser(user));
           });
+          socket.socket.on(
+            SocketEvent.UserTyping,
+            ({ user, id }: { user: TUser; id: number }) => {
+              console.log("start", user.id);
+              store.dispatch(setUserTyping({ user, id }));
+            }
+          );
+          socket.socket.on(
+            SocketEvent.UserStopTyping,
+            ({ user, id }: { user: TUser; id: number }) => {
+              console.log("stop", id);
+
+              store.dispatch(setUserStopTyping({ user, id }));
+            }
+          );
         }
       }
     }
 
     if (startListeningConversation.match(action) && socket) {
       const { id, type } = action.payload;
-      socket.socket.off(type + "" + id);
-      socket.socket.on(type + "" + id, (message) => {
+      const eventName = type + "" + id;
+      socket.socket.off(eventName);
+      socket.socket.off(eventName + "typing");
+      socket.socket.off(eventName + "stop-typing");
+      console.log(eventName + "stop-typing");
+      socket.socket.on(eventName, (message) => {
         store.dispatch(reciveMessage(message.message));
+      });
+      console.log(eventName + "typing");
+      socket.socket.on(eventName + "typing", (user) => {
+        store.dispatch(setUserTypingConversation(user));
+      });
+      socket.socket.on(eventName + "stop-typing", (user) => {
+        store.dispatch(setUserStopTypingConversation(user));
       });
     }
 
@@ -140,6 +174,13 @@ const socketMiddleware: Middleware = (store) => {
       socket = null;
       closeSocketConnection();
       store.dispatch(connectionLost());
+    }
+    if (startTyping.match(action) && socket) {
+      socket.socket.emit(SocketEvent.UserTyping, action.payload);
+    }
+
+    if (stopTyping.match(action) && socket) {
+      socket.socket.emit(SocketEvent.UserStopTyping, action.payload);
     }
     next(action);
   };

@@ -33,6 +33,7 @@ export class MessageEmitter implements IMessageToSocket {
         type: "user",
         name: recipient.name,
         users: [],
+        typing: [],
       };
     } else {
       this.to =
@@ -42,6 +43,7 @@ export class MessageEmitter implements IMessageToSocket {
               childId: recipient.id,
               type: "user",
               users: conversation.users,
+              typing: [],
             }
           : {
               id: conversation.id,
@@ -49,6 +51,7 @@ export class MessageEmitter implements IMessageToSocket {
               name: conversation.name,
               type: "room",
               users: conversation.users,
+              typing: [],
             };
     }
   }

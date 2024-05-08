@@ -19,6 +19,7 @@ export interface IConversation {
   messages?: ISingleMessage[];
   users: TUser[];
   type: "user" | "room";
+  typing: TUser[];
 }
 
 export interface IConversationCard {
@@ -28,6 +29,7 @@ export interface IConversationCard {
   lastMessage?: ISingleMessage;
   recipient?: TUser | TRoom;
   usersIds?: number[];
+  typing: TUser[];
   type: "user" | "room";
 }
 
