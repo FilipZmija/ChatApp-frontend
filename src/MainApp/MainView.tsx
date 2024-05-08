@@ -28,6 +28,7 @@ export default function MainView() {
             },
           }
         );
+        console.log(response.data);
         response.data.recipient.type = selection.type;
 
         dispatch(updateInfo(response.data));

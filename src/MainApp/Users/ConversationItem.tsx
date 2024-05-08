@@ -37,7 +37,7 @@ export default function ConversationItem({
         }
         selected={
           selectedUser.type === conversation.type &&
-          selectedUser.id === +conversation.childId
+          selectedUser.id === conversation.childId
         }
         divider
       >

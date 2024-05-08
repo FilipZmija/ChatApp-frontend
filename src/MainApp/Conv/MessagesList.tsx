@@ -18,6 +18,7 @@ import {
   readMessages,
 } from "../../redux/slices/conversationSlice";
 import { readLastMessage } from "../../redux/slices/instancesSlice";
+import { METHODS } from "http";
 interface IMessagesResponse {
   messages: ISingleMessage[];
 }
@@ -72,11 +73,13 @@ const messageIndicators = (amount: number, id: number) => {
 };
 
 export default function MessagesList({
+  typing,
   messages,
   id,
   recipient,
   conversationId,
 }: {
+  typing: TUser[];
   messages: ISingleMessage[] | undefined;
   id: number;
   recipient: TUser | TRoom;
@@ -179,7 +182,7 @@ export default function MessagesList({
 
   useLayoutEffect(() => {
     if (shouldScrollToBottom) scrollToBottom();
-  }, [messages, shouldScrollToBottom]);
+  }, [messages, shouldScrollToBottom, typing]);
 
   const handleScroll = async () => {
     if (
@@ -246,6 +249,24 @@ export default function MessagesList({
                 }
               })}
               <div ref={messagesEndRef} />
+              {typing.map((user) => {
+                const typingInicator = {
+                  id: 0,
+                  content: "",
+                  status: "typing",
+                  user: user,
+                  createdAt: new Date().toDateString(),
+                };
+                return (
+                  <Message
+                    message={typingInicator}
+                    type={"single"}
+                    messageSender="guest"
+                    nextMessageSender={null}
+                    timeDifferenceBack={0}
+                  />
+                );
+              })}
             </div>
           ) : (
             <>

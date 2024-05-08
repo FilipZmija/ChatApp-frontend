@@ -105,6 +105,40 @@ const conversationSlice = createSlice({
       state.selection.type = action.payload.type;
       state.selection.name = action.payload.name;
     },
+    setUserTyping: (
+      state,
+      action: PayloadAction<{ user: TUser; id: number }>
+    ) => {
+      const { user, id } = action.payload;
+
+      const index = state.conversations.findIndex(
+        (conv) => conv.childId === id
+      );
+      console.log(index);
+      if (index !== -1) {
+        state.conversations[index].typing ||= [];
+        state.conversations[index].typing?.push(user);
+      }
+    },
+    setUserStopTyping: (
+      state,
+      action: PayloadAction<{ user: TUser; id: number }>
+    ) => {
+      const { user, id } = action.payload;
+
+      const index = state.conversations.findIndex((conv) => conv.id === id);
+      if (index !== -1) {
+        state.conversations[index].typing = state.conversations[
+          index
+        ].typing?.filter((users) => users.id !== user.id);
+
+        state.conversations[index].typing =
+          state.conversations[index].typing?.length === 0
+            ? []
+            : state.conversations[index].typing;
+        state.conversations.forEach((conv) => console.log(conv.typing));
+      }
+    },
     createRoom: (state, action: PayloadAction<TRoomCreationData>) => {
       return;
     },
@@ -165,19 +199,21 @@ const conversationSlice = createSlice({
           state.conversations = newConvs;
         }
       } else {
-        const newConversation: IConversation = {
+        const newConversation: IConversationCard = {
           id,
           childId,
           type,
           name,
-          users,
+          typing: [],
         };
         state.conversations.unshift(newConversation);
         state.conversations[0].lastMessage = action.payload.message;
       }
     },
     joinRoom: (state, action: PayloadAction<IConversation>) => {
-      state.conversations.unshift(action.payload);
+      if (typeof action.payload.childId === "number") {
+        state.conversations.unshift(action.payload);
+      }
     },
   },
 });
@@ -199,5 +235,7 @@ export const {
   updateConversation,
   updateUser,
   readLastMessage,
+  setUserTyping,
+  setUserStopTyping,
 } = conversationSlice.actions;
 export default conversationSlice.reducer;
