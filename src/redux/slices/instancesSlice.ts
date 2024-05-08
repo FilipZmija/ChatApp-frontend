@@ -187,7 +187,7 @@ const conversationSlice = createSlice({
         from: TUser;
       }>
     ) => {
-      const { id, type, users } = action.payload.to;
+      const { id, type } = action.payload.to;
       const { id: childId, name } = action.payload.from;
       const index = state.conversations.findIndex((conv) => conv.id === id);
       if (index !== -1) {
