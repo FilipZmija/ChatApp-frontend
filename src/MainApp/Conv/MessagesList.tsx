@@ -18,7 +18,6 @@ import {
   readMessages,
 } from "../../redux/slices/conversationSlice";
 import { readLastMessage } from "../../redux/slices/instancesSlice";
-import { METHODS } from "http";
 interface IMessagesResponse {
   messages: ISingleMessage[];
 }
